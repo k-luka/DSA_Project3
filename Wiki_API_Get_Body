@@ -1,0 +1,29 @@
+import wikipediaapi
+
+# returns text body of a page
+def get_wikipedia_page_text(page_title):
+    # Configure the user agent for Wikipedia API access
+    config = {
+        "language": "en",
+        "user_agent": "MyWikiCrawler/1.0 (kirilldenisluka@gmail.com)"
+    }
+
+    # Initialize the Wikipedia API with configuration
+    wiki_wiki = wikipediaapi.Wikipedia(**config)
+
+    # Fetch the page for the given title
+    page = wiki_wiki.page(page_title)
+
+    # Check if the page exists
+    if page.exists():
+        # Return the text of the page
+        return page.text
+    else:
+        return "Page not found"
+
+
+# Usage
+page_title = "University of Florida"
+
+page_text = get_wikipedia_page_text(page_title)
+print(page_text)
