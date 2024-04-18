@@ -75,6 +75,7 @@ def get_word_frequency(page_title):
     return dict(word_counts)
 
 # Example usage
+'''
 page_title = "University of Florida"
 
 page_text = get_wikipedia_page_text(page_title)
@@ -85,3 +86,4 @@ print(linked_pages)
 
 frequencies = get_word_frequency(page_title)
 print(frequencies)
+'''
