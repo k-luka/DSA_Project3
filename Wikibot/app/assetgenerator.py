@@ -1,6 +1,6 @@
-from .stages import Stage, StageCreateInfo, AssetCreateInfo
-from .asset import *
+from .asset.sprite import Sprite, SpriteCreateInfo
 from .appinterface import AppInterface
+from .stages.stage import Stage, StageCreateInfo, AssetCreateInfo
 from typing import Union
 import pygame as pg
 
@@ -12,7 +12,7 @@ def generate_stage_info(app: Union[type[AppInterface], AppInterface]) -> list[St
             name="main_menu",
             stage_func=None,
             kdfs=None,
-            kufs={pg.K_ESCAPE: "quit", pg.K_n: "add_node"}
+            kufs={pg.K_ESCAPE: "quit", pg.K_n: "add_node", pg.K_t: "add_test_image", pg.K_l: "add_node_with_link"}
         )
     ]
 
@@ -20,7 +20,8 @@ def generate_stage_info(app: Union[type[AppInterface], AppInterface]) -> list[St
 def generate_asset_info(stage: Stage) -> list[AssetCreateInfo]:
     assets = list()
     if stage.name == "main_menu":
-        assets.append(generate_asset("exit_button", stage))
+        pass
+        # assets.append(generate_asset("exit_button", stage))
     return assets
 
 
@@ -33,6 +34,7 @@ def generate_asset(asset_name: str, stage: Stage):
             posPx=(25, 500),
             dimensionsPx=(100, 100),
             scale=(1, 1),
+            rot=0,
             kdfs={pg.K_x: 'key_switch_to_secondary_texture'},
             kufs={pg.K_x: 'key_switch_to_default_texture'},
             textures=["exit.png", "exit_border.png"],

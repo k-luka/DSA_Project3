@@ -18,6 +18,7 @@ class StaticDrawableCreateInfo:
     posPx: Optional[Union[tuple[float, float], tuple[int, int], None]] = None
     dimensionsPx: Optional[Union[tuple[float, float], tuple[int, int]]] = None
     scale: Optional[Union[tuple[float, float], tuple[int, int], None]] = field(default=(1, 1))
+    rot: Optional[Union[float, int]] = field(default=0)
     # Dynamic function bindings
     kdfs: Optional[dict[int, str]] = None
     kufs: Optional[dict[int, str]] = None
@@ -25,21 +26,22 @@ class StaticDrawableCreateInfo:
 
 class StaticDrawable(Keyfuncs):
     # Identifying properties
-    app: AppInterface = field(init=False)
-    name: str = field(init=False)
-    stage: Union[type[StageType]] = field(init=False)
+    app: AppInterface = False
+    name: str = False
+    stage: Union[type[StageType]] = False
     # Physical properties
-    textures: Union[tuple[str, ...], list[str, ...]] = field(default_factory=list)
-    posPx: Optional[Union[tuple[float, float], tuple[int, int], None]] = field(init=False, default=None)
-    dimensionsPx: Optional[Union[tuple[float, float], tuple[int, int]]] = field(init=False, default=None)
-    scale: Optional[Union[tuple[float, float], tuple[int, int], None]] = field(default=(1, 1))
-    kdfs: Optional[dict[int, Callable[[int, Sequence[bool]], None]]] = field(init=False, default=None)
-    kufs: Optional[dict[int, Callable[[int, Sequence[bool]], None]]] = field(init=False, default=None)
+    textures: Union[tuple[str, ...], list[str, ...]] = list()
+    posPx: Optional[Union[tuple[float, float], tuple[int, int], None]] = None
+    dimensionsPx: Optional[Union[tuple[float, float], tuple[int, int]]] = None
+    scale: Optional[Union[tuple[float, float], tuple[int, int], None]] = (1, 1)
+    rot: Optional[Union[float, int]] = 0
+    kdfs: Optional[dict[int, Callable[[int, Sequence[bool]], None]]] = None
+    kufs: Optional[dict[int, Callable[[int, Sequence[bool]], None]]] = None
     # Post-initialization parameters
-    vbo_name: Optional[str] = field(init=False, default=None)
-    vao_name: Optional[str] = field(init=False, default=None)
-    texture_name: Optional[str] = field(init=False, default=None)
-    model: Optional[GUI] = field(init=False, default=None)
+    vbo_name: Optional[str] = None
+    vao_name: Optional[str] = None
+    texture_name: Optional[str] = None
+    model: Optional[GUI] = None
     # Internal variables
     program_name: str = 'texture_2d'
     current_texture: int = 0
@@ -53,6 +55,7 @@ class StaticDrawable(Keyfuncs):
         self.posPx = info.posPx
         self.dimensionsPx = info.dimensionsPx
         self.scale = info.scale
+        self.rot = info.rot
         self._initialize_kdfs(info.kdfs)
         self._initialize_kufs(info.kufs)
         logging.info(f' Generating StaticDrawable data for {self.__class__.__name__} object \'{self.name}\'')
@@ -157,7 +160,8 @@ class StaticDrawable(Keyfuncs):
                     texture_name=self.texture_name,
                     pos=self.pos,
                     dimensions=self.dimensionsPx,
-                    scale=self.scale
+                    scale=self.scale,
+                    rot=self.rot
                     )
         return model
 
