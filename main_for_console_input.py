@@ -1,6 +1,8 @@
 from wikiAPI_functions import *
+# Test
 
 def main():
+    wiki = wikiApi()
     while True:
         print("\nWhat would you like to do?")
         print("1: Get Wikipedia page text")
@@ -18,23 +20,24 @@ def main():
 
         if choice == "1":
             print("\nFetching page text...")
-            page_text = get_wikipedia_page_text(page_title)
+            page_text = wiki.get_wikipedia_page_text(page_title)
             print(page_text)
 
         elif choice == "2":
             print("\nFetching page links...")
-            linked_pages = get_wikipedia_page_links(page_title)
+            linked_pages = wiki.get_wikipedia_page_links(page_title)
             print(linked_pages)
 
         elif choice == "3":
             print("\nCalculating word frequency...")
-            frequencies = get_word_frequency(page_title)
+            frequencies = wiki.get_word_frequency(page_title)
             print(frequencies)
+            # ex
 
         elif choice == "4":
             target_page = input("Enter the target page: ")
             print("\nCalculating word frequency...")
-            prioritized_frequencies = get_prioritized_titles(target_page, page_title)
+            prioritized_frequencies = wiki.get_prioritized_titles(target_page, page_title)
             print(prioritized_frequencies)
 
         else:
