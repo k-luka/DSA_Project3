@@ -18,10 +18,10 @@ class Texture:
         self.textures[name] = self.get_text_texture(size=size, color=color, text=text, background=background)
 
     def get_image_texture(self, path: str) -> pg.Surface:
-        texture = pg.image.load(path).convert()
+        texture = pg.image.load(path).convert_alpha()
         texture = pg.transform.flip(texture, flip_x=False, flip_y=True)
-        texture = self.ctx.texture(size=texture.get_size(), components=3,
-                                   data=pg.image.tostring(texture, 'RGB'))
+        texture = self.ctx.texture(size=texture.get_size(), components=4,
+                                   data=pg.image.tostring(texture, 'RGBA'))
         # Mipmaps
         texture.filter = (mgl.LINEAR_MIPMAP_LINEAR, mgl.LINEAR)
         texture.build_mipmaps()
@@ -34,8 +34,8 @@ class Texture:
     def get_text_texture(self, size: int, color: tuple[int, int, int], text: str, background: tuple[int, int, int]) -> pg.Surface:
         texture = pg.font.Font(None, size).render(text, True, color, background)
         texture = pg.transform.flip(texture, flip_x=False, flip_y=True)
-        texture = self.ctx.texture(size=texture.get_size(), components=3,
-                                   data=pg.image.tostring(texture, 'RGB'))
+        texture = self.ctx.texture(size=texture.get_size(), components=4,
+                                   data=pg.image.tostring(texture, 'RGBA'))
         # Mipmaps
         texture.filter = (mgl.LINEAR_MIPMAP_LINEAR, mgl.LINEAR)
         texture.build_mipmaps()
