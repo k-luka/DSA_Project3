@@ -85,7 +85,7 @@ class wikiApi:
                     prioritized_titles.append(title)
 
         return prioritized_titles
-
+# New functions
     def print_categories_and_summary(self, page):
         # Fetch the page for the given title
         pageEx = self.wiki.page(page)
