@@ -68,12 +68,14 @@ class wikiApi:
 
         # Creates word frequency dictionary of the target page
         word_frequency = self.get_word_frequency(target_page)
+        # Creates list of linked pages in current page
+        pageLinks = self.get_wikipedia_page_links(current_page)
 
         # Retrieves linked titles from the current page and splits each title into words
-        title_words = {title: title.split() for title in self.get_wikipedia_page_links(current_page)}
+        title_words = {title: title.split() for title in pageLinks}
 
         # If target page is in links of current page then the page is found!!!
-        if target_page in self.get_wikipedia_page_links(current_page):
+        if target_page in pageLinks:
             prioritized_titles.append(target_page)
 
         # Iterates over each title and its words
@@ -86,18 +88,25 @@ class wikiApi:
 
         return prioritized_titles
 # New functions
-    def print_categories_and_summary(self, page):
+    def get_categories(self, page):
         # Fetch the page for the given title
         pageEx = self.wiki.page(page)
         categories = pageEx.categories
+        '''
         for title in sorted(categories.keys()):
-            print("%s: %s" % (title, categories[title]))
+            print(title)
+        print(len(categories))
+        '''
+        return categories.keys()
+
+    def print_summary(self, page):
+        pageEx = self.wiki.page(page)
         print("Page - Summary: %s" % pageEx.summary)
 
-'''
-wikiInstance = wikiApi()
-wikiInstance.print_categories_and_summary("Florida")
 
+wikiInstance = wikiApi()
+wikiInstance.print_categories_and_summary("University of Florida")
+'''
 # Example usage
 
 page_title = "University of Florida"
