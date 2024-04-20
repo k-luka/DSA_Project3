@@ -97,16 +97,36 @@ class wikiApi:
             print(title)
         print(len(categories))
         '''
-        return categories.keys()
+        return set(categories.keys())
 
     def print_summary(self, page):
-        pageEx = self.wiki.page(page)
-        print("Page - Summary: %s" % pageEx.summary)
+        pageObj = self.wiki.page(page)
+        print("Page - Summary: %s" % pageObj.summary)
         # ex
+    '''
+    def get_proportion_of_common_categories(self, sourcePage, targetPage):
+        sourceCategories = self.get_categories(sourcePage)
+        targetCategories = self.get_categories(targetPage)
+        if len(targetCategories) == 0: return 0
+        return len(sourceCategories & targetCategories) / len(targetCategories)
+    '''
+    def get_links_sorted_by_common_categories_with_target(self, page, target):
+        links = self.get_wikipedia_page_links(page)
+        targetCategories = self.get_categories(target)
+        linksAndProportions = {}
+        for link in links:
+            sourceCategories = self.get_categories(link)
+            proportion = 0
+            if (len(targetCategories) > 0):
+                proportion = len(sourceCategories & targetCategories) / len(targetCategories)
+            linksAndProportions[link] = proportion
+            #print(str(link) + " : " + str(proportion))
+        return dict(sorted(linksAndProportions.items(), key=lambda item: item[1], reverse=True))
 
 
 wikiInstance = wikiApi()
-wikiInstance.print_categories_and_summary("University of Florida")
+#print(wikiInstance.get_proportion_of_common_categories("University of Georgia", "Bulldog"))
+print(wikiInstance.get_links_sorted_by_common_categories_with_target("United States", "Coca-Cola"))
 '''
 # Example usage
 

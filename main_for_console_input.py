@@ -25,7 +25,7 @@ def main():
 
         elif choice == "2":
             print("\nFetching page links...")
-            linked_pages = wiki.get_wikipedia_page_text(page_title)
+            linked_pages = wiki.get_wikipedia_page_links(page_title)
             print(linked_pages)
 
         elif choice == "3":
