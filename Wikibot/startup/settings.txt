@@ -1,0 +1,4 @@
+screenwidth=900
+screenheight=600
+fps=60
+debug=0
