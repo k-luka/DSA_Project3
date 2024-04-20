@@ -56,7 +56,8 @@ def get_word_frequency(page_title):
         "the", "and", "a", "an", "in", "on", "at", "for", "with", "about", "as", "to", "of", "it",
         "by", "from", "that", "this", "but", "up", "down", "out", "or", "when", "which", "who",
         "what", "is", "are", "was", "were", "be", "being", "been", "have", "has", "had", "do",
-        "does", "did", "will", "would", "shall", "should", "can", "could", "may", "might", "must", "ought"
+        "does", "did", "will", "would", "shall", "should", "can", "could", "may", "might", "must", "ought",
+        "also", "s", "its", "such", "than", "many", "much"
     ])
 
     # Get the text of the page using the previously defined function
@@ -72,7 +73,8 @@ def get_word_frequency(page_title):
     # Create a Counter to count occurrences of each word, excluding stop words
     word_counts = Counter(word for word in words if word not in stop_words)
 
-    return dict(word_counts)
+    # Return sorted dictionary of words by decreasing frequency
+    return dict(sorted(word_counts.items(), key=lambda item: item[1], reverse=True))
 
 # Example usage
 '''
