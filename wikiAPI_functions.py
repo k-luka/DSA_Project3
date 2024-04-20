@@ -1,7 +1,7 @@
 import wikipediaapi
 import re
 from collections import Counter
-# Test comment
+
 
 def get_wikipedia_page_links(page_title):
     # Configuration for Wikipedia API access
@@ -53,13 +53,11 @@ def get_wikipedia_page_text(page_title):
 
 def get_word_frequency(page_title):
     # List of common stop words to exclude
-    stop_words = set([
-        "the", "and", "a", "an", "in", "on", "at", "for", "with", "about", "as", "to", "of", "it",
-        "by", "from", "that", "this", "but", "up", "down", "out", "or", "when", "which", "who",
-        "what", "is", "are", "was", "were", "be", "being", "been", "have", "has", "had", "do",
-        "does", "did", "will", "would", "shall", "should", "can", "could", "may", "might", "must", "ought",
-        "also", "s", "its", "such", "than", "many", "much"
-    ])
+    stop_words = {"the", "and", "a", "an", "in", "on", "at", "for", "with", "about", "as", "to", "of", "it", "by",
+                  "from", "that", "this", "but", "up", "down", "out", "or", "when", "which", "who", "what", "is", "are",
+                  "was", "were", "be", "being", "been", "have", "has", "had", "do", "does", "did", "will", "would",
+                  "shall", "should", "can", "could", "may", "might", "must", "ought", "also", "s", "its", "such",
+                  "than", "many", "much"}
 
     # Get the text of the page using the previously defined function
     text = get_wikipedia_page_text(page_title)
