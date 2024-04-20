@@ -8,8 +8,7 @@ def main():
         print("3: Get word frequency on a page")
         print("4: Get prioritized frequencies based on target page")
         print("0: Exit")
-        choice = input("Enter your choice (0-4"
-                       "): ")
+        choice = input("Enter your choice (0-4): ")
 
         if choice == "0":
             print("Exiting the program.")
