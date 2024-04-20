@@ -146,6 +146,7 @@ class wikiApi:
     def bfs_search(self, starting_page, target_page, n):
         queue = deque([starting_page])  # Queue to manage the frontier pages
         visited = set()  # Set to keep track of visited pages to avoid cycles
+        levels = 0
 
         while queue:
             current_page = queue.popleft()
@@ -155,13 +156,17 @@ class wikiApi:
                 continue
             visited.add(current_page)
 
+            completedLevelsSize = sum([n**i for i in range(0, levels+1)])
+            if len(visited) - 1 == completedLevelsSize:
+                levels += 1
+
             # Get the top 'n' similar linked pages from the current page
             try:
                 related_links = self.get_n_first_similarity_index_of_links(current_page, target_page, n)
                 # Check if the current page is the target page
                 print(str(current_page) + " links to " + str(related_links))
                 if target_page.upper() in [word.upper() for word in related_links.keys()]:
-                    return f"Target page '{target_page}' found starting from '{starting_page}'."
+                    return f"Target page '{target_page}' found starting from '{starting_page}'. Distance = {levels+1}"
 
 
             except Exception as e:
@@ -180,7 +185,7 @@ class wikiApi:
 wikiInstance = wikiApi()
 #print(wikiInstance.get_proportion_of_common_categories("University of Georgia", "Bulldog"))
 #print(wikiInstance.bfs_search("Mars", "Moon", 4))
-print(wikiInstance.bfs_search("Starbucks", "Strawberry", 10))
+print(wikiInstance.bfs_search("Georgia", "Strawberry", 5))
 '''
 # Example usage
 
