@@ -8,8 +8,6 @@ from app.application import Application, AppCreateInfo
 def main(win_size, fps, debug_level):
     # Get working directory
     working_directory = os.getcwd()
-    if '\\Wikibot' not in working_directory:
-        working_directory += '\\Wikibot'
     # Create application window
     app_create_info = AppCreateInfo(
         win_size=win_size,
