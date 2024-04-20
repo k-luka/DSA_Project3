@@ -1,5 +1,4 @@
 from wikiAPI_functions import *
-# Test
 
 def main():
     wiki = wikiApi()
@@ -9,8 +8,9 @@ def main():
         print("2: Get Wikipedia page links")
         print("3: Get word frequency on a page")
         print("4: Get prioritized frequencies based on target page")
+        print("5: Get N first similarity index of links")
         print("0: Exit")
-        choice = input("Enter your choice (0-4): ")
+        choice = input("Enter your choice (0-5): ")
 
         if choice == "0":
             print("Exiting the program.")
@@ -40,6 +40,12 @@ def main():
             prioritized_frequencies = wiki.get_prioritized_titles(target_page, page_title)
             print(prioritized_frequencies)
 
+        elif choice == "5":
+            target_page = input("Enter the target page: ")
+            N = int(input("Enter the number titles you want to know the index of: "))
+            print("\nCalculating similarity index of links...")
+            wikiInstance = wikiApi()
+            print(wikiInstance.get_n_first_similarity_index_of_links(page_title, target_page, N))
         else:
             print("Invalid choice. Please choose a valid option.")
 
