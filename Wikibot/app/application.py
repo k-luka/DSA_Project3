@@ -1,9 +1,9 @@
-from Wikibot.engine.graphics import Graphics
-from .mainloop import MainLoop
-from dataclasses import dataclass
-import pygame as pg
-from .appinterface import AppInterface
 import logging
+import pygame as pg
+from dataclasses import dataclass
+from .appinterface import AppInterface
+from .mainloop import MainLoop
+from Wikibot.engine.graphics import Graphics
 
 @dataclass()
 class AppCreateInfo:

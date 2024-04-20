@@ -1,8 +1,8 @@
 import logging
 import time
 import os
-from startup import *
-from app import *
+from startup import Settings
+from app.application import Application, AppCreateInfo
 
 
 def main(win_size, fps, debug_level):

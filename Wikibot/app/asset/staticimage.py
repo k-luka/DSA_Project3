@@ -1,5 +1,7 @@
 from __future__ import annotations
-from .staticdrawable import *
+from typing import Optional, Union
+from dataclasses import dataclass, field
+from .staticdrawable import StaticDrawable, StaticDrawableCreateInfo
 
 
 @dataclass()

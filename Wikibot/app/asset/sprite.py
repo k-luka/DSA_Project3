@@ -1,4 +1,5 @@
-from .staticbutton import *
+from .staticbutton import StaticButton, StaticButtonCreateInfo
+from typing import Union
 from dataclasses import dataclass
 
 @dataclass()

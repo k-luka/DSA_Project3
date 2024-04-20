@@ -1,11 +1,13 @@
+import logging
 import pygame as pg
-from .assetgenerator import generate_stage_info, generate_asset_info
-from .appinterface import AppInterface
 from dataclasses import field
 from typing import Union
-from .asset import Sprite, StaticDrawable, StaticButton
-import logging
-from .stages import Stage
+from .appinterface import AppInterface
+from .asset.sprite import Sprite
+from .asset.staticdrawable import StaticDrawable
+from .asset.staticbutton import StaticButton
+from .assetgenerator import generate_stage_info, generate_asset_info
+from .stages.stage import Stage
 
 
 class MainLoop:
