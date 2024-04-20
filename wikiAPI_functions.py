@@ -1,6 +1,6 @@
 import wikipediaapi
 import re
-from collections import Counter
+from collections import Counter, deque
 
 class wikiApi:
     def __init__(self):
@@ -105,9 +105,44 @@ class wikiApi:
         '''
         return set(categories.keys())
 
+    '''
     def get_summary(self, page):
         pageObj = self.wiki.page(page)
         return pageObj.summary
+    '''
+
+    def bfs_search(self, starting_page, target_page, n):
+        queue = deque([starting_page])  # Queue to manage the frontier pages
+        visited = set()  # Set to keep track of visited pages to avoid cycles
+
+        while queue:
+            current_page = queue.popleft()
+
+            # Check if the current page is the target page
+            if current_page == target_page:
+                return f"Target page '{target_page}' found starting from '{starting_page}'."
+
+            # Skip revisiting pages
+            if current_page in visited:
+                continue
+            visited.add(current_page)
+
+            # Get the top `n` similar linked pages from the current page
+            try:
+                related_links = self.get_n_first_similarity_index_of_links(current_page, target_page, n)
+                print(str(current_page) + " links to " + str(related_links))
+
+            except Exception as e:
+                print(f"Failed to retrieve or process links for {current_page}: {e}")
+                continue
+
+            # Enqueue unvisited linked pages
+            for page, similarity_index in related_links.items():
+                if page not in visited:
+                    queue.append(page)
+
+        return "Target page not found within the connected pages."
+
 
     '''
     def get_proportion_of_common_categories(self, sourcePage, targetPage):
@@ -135,7 +170,7 @@ class wikiApi:
 
 wikiInstance = wikiApi()
 #print(wikiInstance.get_proportion_of_common_categories("University of Georgia", "Bulldog"))
-print(wikiInstance.get_n_first_similarity_index_of_links("School", "Statistics", 10))
+print(wikiInstance.bfs_search("Mars", "Moon", 4))
 '''
 # Example usage
 
