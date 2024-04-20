@@ -1,1 +1,1 @@
-from .stage import Stage, StageCreateInfo, AssetCreateInfo
+from .stage import Stage, StageCreateInfo, AssetCreateInfo, StageType

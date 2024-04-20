@@ -11,7 +11,7 @@ from .stagetype import StageType
 @dataclass()
 class AssetCreateInfo:
     asset_info: Union[ButtonCreateInfo, SpriteCreateInfo, StaticButtonCreateInfo,
-    StaticDrawableCreateInfo, StaticImageCreateInfo, StaticTextCreateInfo]
+                StaticDrawableCreateInfo, StaticImageCreateInfo, StaticTextCreateInfo]
     asset_type: type[Union[ButtonType, Sprite, StaticButton, StaticDrawable, StaticImage, StaticText]]
     start_visible: Optional[bool] = False
 
@@ -96,8 +96,8 @@ class Stage(StageType, StageFuncs, StageKeyFuncs):
             asset.add_to_scene()
         logging.info(f"Successfully loaded asset \'{asset.name}\'")
 
-    def remove_game_object(self, asset) -> None:
-        if not asset.name in self.asset_dictionary:
+    def destroy_asset(self, asset) -> None:
+        if asset.name not in self.asset_dictionary:
             logging.warning(f"Failed to remove asset \'{asset.name}\': Asset is not in asset dictionary")
             return
         if self.state > -1:
@@ -148,4 +148,20 @@ class Stage(StageType, StageFuncs, StageKeyFuncs):
 
     def key_up(self, key, keys) -> None:
         self.kufs[key](key, keys)
+
+    def add_sprite(self, new_sprite: Sprite, make_viewable: bool = False):
+        # WARNING: WILL OVERWRITE SPRITE IF TWO SPRITE HAVE THE SAME NAME
+        self.asset_dictionary[new_sprite.name] = new_sprite
+        if self.state > -1:
+            new_sprite.load()
+        if make_viewable and self.state > -1:
+            new_sprite.add_to_scene()
+
+    def destroy_sprite(self, doomed_sprite: Sprite):
+        if doomed_sprite.isViewable:
+            doomed_sprite.remove_from_scene()
+        if self.state > -1:
+            doomed_sprite.unload()
+        del self.asset_dictionary[doomed_sprite.name]
+
 

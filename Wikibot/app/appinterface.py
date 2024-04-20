@@ -94,6 +94,9 @@ class AppInterface(ABC):
 
     @abstractmethod
     def run(self) -> None: pass
+
+    @abstractmethod
+    def add_sprite_to_stage(self, sprite, stage, make_viewable: bool = False) -> None: pass
     
 
 
