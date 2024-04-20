@@ -106,14 +106,14 @@ class MainLoop:
         if trigger not in self.mouse_down_bindings.keys():
             return
         buttons = pg.mouse.get_pressed()
-        for clickable in self.mouse_down_bindings[trigger].union(self.hover_activated_objects):
+        for clickable in self.mouse_down_bindings[trigger].intersection(self.hover_activated_objects):
             clickable.mouse_down(trigger, buttons)
 
     def handle_mouse_up(self, trigger: int) -> None:
         if trigger not in self.mouse_up_bindings.keys():
             return
         buttons = pg.mouse.get_pressed()
-        for clickable in self.mouse_up_bindings[trigger].union(self.hover_activated_objects):
+        for clickable in self.mouse_up_bindings[trigger].intersection(self.hover_activated_objects):
             clickable.mouse_up(trigger, buttons)
 
     def execute(self) -> None:
@@ -216,3 +216,9 @@ class MainLoop:
             logging.warning(
                 f"Failed to remove {drawable.__class__.__name__} object '{drawable.name}' from static drawable object list: Object is not in static drawable object list")
         self.drawings.remove(drawable)
+
+    def add_sprite_to_stage(self, sprite: Sprite, stage: Stage, make_viewable: bool = False):
+        self.stages[stage.name].add_sprite(sprite, make_viewable)
+
+    def remove_sprite_from_stage(self, sprite: Sprite, stage: Stage):
+        self.stages[stage.name].destroy_sprite(sprite)

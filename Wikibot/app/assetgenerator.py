@@ -9,9 +9,13 @@ def generate_stage_info(app: Union[type[AppInterface], AppInterface]) -> list[St
     return [
         StageCreateInfo(
             app=app,
-            name="main_menu"
+            name="main_menu",
+            stage_func=None,
+            kdfs=None,
+            kufs={pg.K_ESCAPE: "quit", pg.K_n: "add_node"}
         )
     ]
+
 
 def generate_asset_info(stage: Stage) -> list[AssetCreateInfo]:
     assets = list()

@@ -126,6 +126,9 @@ class Application(AppInterface):
     def win_size(self) -> tuple[int, int]:
         return self.graphics.WIN_SIZE
 
+    def add_sprite_to_stage(self, sprite, stage, make_viewable: bool = False) -> None:
+        self.mainloop.add_sprite_to_stage(sprite, stage, make_viewable)
+
     def quit(self) -> None:
         self.running = False
 
