@@ -6,6 +6,12 @@ class wikiApi:
     def __init__(self):
         # Initialize the Wikipedia API
         self.wiki = wikipediaapi.Wikipedia('DSA_Project3', 'en')
+        # List of common stop words to exclude
+        self.stop_words = {"the", "and", "a", "an", "in", "on", "at", "for", "with", "about", "as", "to", "of", "it", "by",
+                      "from", "that", "this", "but", "up", "down", "out", "or", "when", "which", "who", "what", "is", "are",
+                      "was", "were", "be", "being", "been", "have", "has", "had", "do", "does", "did", "will", "would",
+                      "shall", "should", "can", "could", "may", "might", "must", "ought", "also", "s", "its", "such",
+                      "than", "many", "much"}
 
     def get_wikipedia_page_links(self, page_title):
         # Fetch the page for the given title
@@ -39,13 +45,6 @@ class wikiApi:
 
 
     def get_word_frequency(self, page_title):
-        # List of common stop words to exclude
-        stop_words = {"the", "and", "a", "an", "in", "on", "at", "for", "with", "about", "as", "to", "of", "it", "by",
-                      "from", "that", "this", "but", "up", "down", "out", "or", "when", "which", "who", "what", "is", "are",
-                      "was", "were", "be", "being", "been", "have", "has", "had", "do", "does", "did", "will", "would",
-                      "shall", "should", "can", "could", "may", "might", "must", "ought", "also", "s", "its", "such",
-                      "than", "many", "much"}
-
         # Get the text of the page using the previously defined function
         text = self.get_wikipedia_page_text(page_title)
 
@@ -57,14 +56,17 @@ class wikiApi:
         words = re.findall(r'\w+', text.lower())
 
         # Create a Counter to count occurrences of each word, excluding stop words
-        word_counts = Counter(word for word in words if word not in stop_words)
+        word_counts = Counter(word for word in words if word not in self.stop_words)
 
         # Return sorted dictionary of words by decreasing frequency
         return dict(sorted(word_counts.items(), key=lambda item: item[1], reverse=True))
 
-    def get_prioritized_titles(self, target_page, current_page):
+    def split(self, title):
+        return [word for word in title.split() if word not in self.stop_words]
+
+    def get_n_first_similarity_index_of_links(self, current_page, target_page, n):
         # List to store titles that contain any word found in the target page's word frequency list
-        prioritized_titles = []
+        links_and_indices = {}
 
         # Creates word frequency dictionary of the target page
         word_frequency = self.get_word_frequency(target_page)
@@ -72,22 +74,26 @@ class wikiApi:
         pageLinks = self.get_wikipedia_page_links(current_page)
 
         # Retrieves linked titles from the current page and splits each title into words
-        title_words = {title: title.split() for title in pageLinks}
+        title_words = {title: self.split(title) for title in pageLinks}
 
         # If target page is in links of current page then the page is found!!!
-        if target_page in pageLinks:
-            prioritized_titles.append(target_page)
+        #if target_page in pageLinks:
+        #    links_and_indices.append(target_page)
 
         # Iterates over each title and its words
         for title, words in title_words.items():
             # Check if any word in the title is in the target page's frequency dictionary
-            if any(word in word_frequency for word in words):
-                # If at least one word matches, append the title to the prioritized list, if not already added
-                if title not in prioritized_titles:
-                    prioritized_titles.append(title)
+            totalFreq = 0
+            for word in words:
+                if word in word_frequency.keys():
+                    #print(word)
+                    totalFreq += word_frequency[word]
+            totalFreq /= len(words)
+            links_and_indices[title] = totalFreq
+        links_and_indices = dict(sorted(links_and_indices.items(), key=lambda item: item[1], reverse=True))
+        return {x: links_and_indices[x] for x in list(links_and_indices)[:n]}
 
-        return prioritized_titles
-# New functions
+    # New functions
     def get_categories(self, page):
         # Fetch the page for the given title
         pageEx = self.wiki.page(page)
@@ -99,17 +105,17 @@ class wikiApi:
         '''
         return set(categories.keys())
 
-    def print_summary(self, page):
+    def get_summary(self, page):
         pageObj = self.wiki.page(page)
-        print("Page - Summary: %s" % pageObj.summary)
-        # ex
+        return pageObj.summary
+
     '''
     def get_proportion_of_common_categories(self, sourcePage, targetPage):
         sourceCategories = self.get_categories(sourcePage)
         targetCategories = self.get_categories(targetPage)
         if len(targetCategories) == 0: return 0
         return len(sourceCategories & targetCategories) / len(targetCategories)
-    '''
+    
     def get_links_sorted_by_common_categories_with_target(self, page, target):
         links = self.get_wikipedia_page_links(page)
         targetCategories = self.get_categories(target)
@@ -118,15 +124,18 @@ class wikiApi:
             sourceCategories = self.get_categories(link)
             proportion = 0
             if (len(targetCategories) > 0):
-                proportion = len(sourceCategories & targetCategories) / len(targetCategories)
+                for category in targetCategories:
+                    if category in sourceCategories: proportion += 1
+                proportion /= len(targetCategories)
             linksAndProportions[link] = proportion
-            #print(str(link) + " : " + str(proportion))
+            # print(str(link) + " : " + str(len(sourceCategories)))
         return dict(sorted(linksAndProportions.items(), key=lambda item: item[1], reverse=True))
+    '''
 
 
 wikiInstance = wikiApi()
 #print(wikiInstance.get_proportion_of_common_categories("University of Georgia", "Bulldog"))
-print(wikiInstance.get_links_sorted_by_common_categories_with_target("United States", "Coca-Cola"))
+print(wikiInstance.get_n_first_similarity_index_of_links("United States", "Coca-Cola", 4))
 '''
 # Example usage
 
