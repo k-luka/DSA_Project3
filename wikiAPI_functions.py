@@ -135,7 +135,7 @@ class wikiApi:
 
 wikiInstance = wikiApi()
 #print(wikiInstance.get_proportion_of_common_categories("University of Georgia", "Bulldog"))
-print(wikiInstance.get_n_first_similarity_index_of_links("United States", "Coca-Cola", 4))
+print(wikiInstance.get_n_first_similarity_index_of_links("School", "Statistics", 10))
 '''
 # Example usage
 
