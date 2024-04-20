@@ -32,6 +32,7 @@ def main():
             print("\nCalculating word frequency...")
             frequencies = wiki.get_word_frequency(page_title)
             print(frequencies)
+            # ex
 
         elif choice == "4":
             target_page = input("Enter the target page: ")

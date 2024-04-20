@@ -102,6 +102,7 @@ class wikiApi:
     def print_summary(self, page):
         pageEx = self.wiki.page(page)
         print("Page - Summary: %s" % pageEx.summary)
+        # ex
 
 
 wikiInstance = wikiApi()
