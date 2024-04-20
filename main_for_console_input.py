@@ -1,5 +1,4 @@
 from wikiAPI_functions import *
-# Hello
 
 def main():
     wiki = wikiApi()
