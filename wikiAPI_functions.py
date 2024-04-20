@@ -76,6 +76,30 @@ def get_word_frequency(page_title):
     # Return sorted dictionary of words by decreasing frequency
     return dict(sorted(word_counts.items(), key=lambda item: item[1], reverse=True))
 
+def get_prioritized_titles(target_page, current_page):
+    # List to store titles that contain any word found in the target page's word frequency list
+    prioritized_titles = []
+
+    # Creates word frequency dictionary of the target page
+    word_frequency = get_word_frequency(target_page)
+
+    # Retrieves linked titles from the current page and splits each title into words
+    title_words = {title: title.split() for title in get_wikipedia_page_links(current_page)}
+
+    # If target page is in links of current page then the page is found!!!
+    if target_page in get_wikipedia_page_links(current_page):
+        prioritized_titles.append(target_page)
+
+    # Iterates over each title and its words
+    for title, words in title_words.items():
+        # Check if any word in the title is in the target page's frequency dictionary
+        if any(word in word_frequency for word in words):
+            # If at least one word matches, append the title to the prioritized list, if not already added
+            if title not in prioritized_titles:
+                prioritized_titles.append(title)
+
+    return prioritized_titles
+
 # Example usage
 '''
 page_title = "University of Florida"

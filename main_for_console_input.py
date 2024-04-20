@@ -6,8 +6,10 @@ def main():
         print("1: Get Wikipedia page text")
         print("2: Get Wikipedia page links")
         print("3: Get word frequency on a page")
+        print("4: Get prioritized frequencies based on target page")
         print("0: Exit")
-        choice = input("Enter your choice (0-3): ")
+        choice = input("Enter your choice (0-4"
+                       "): ")
 
         if choice == "0":
             print("Exiting the program.")
@@ -29,6 +31,12 @@ def main():
             print("\nCalculating word frequency...")
             frequencies = get_word_frequency(page_title)
             print(frequencies)
+
+        elif choice == "4":
+            target_page = input("Enter the target page: ")
+            print("\nCalculating word frequency...")
+            prioritized_frequencies = get_prioritized_titles(target_page, page_title)
+            print(prioritized_frequencies)
 
         else:
             print("Invalid choice. Please choose a valid option.")
