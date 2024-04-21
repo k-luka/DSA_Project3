@@ -5,8 +5,16 @@ import heapq
 import wordfreq
 import math
 
-class wikiApi:
-    def __init__(self):
+class WikiApi:
+    '''
+    class WikiPage:
+        def __init__(self):
+            self.text = ""
+            self.links = []
+            self.parent = ""
+            self.similarity_index = 0
+    '''
+    def __init__(self, word_uniqueness = True, neighbors_checked = 5):
         # Initialize the Wikipedia API
         self.wiki = wikipediaapi.Wikipedia('DSA_Project3', 'en')
         # List of common stop words to exclude
@@ -16,6 +24,20 @@ class wikiApi:
                       "shall", "should", "can", "could", "may", "might", "must", "ought", "also", "s", "its", "such",
                       "than", "many", "much"}
         self.stop_words = [word.upper() for word in self.stop_words]
+        self.adjust_for_word_uniqueness = word_uniqueness
+        self.neighbors_to_check = neighbors_checked
+
+    def reverse_adjust_for_word_uniqueness(self):
+        self.adjust_for_word_uniqueness = not self.adjust_for_word_uniqueness
+
+    def set_neighbors_to_check(self, n):
+        self.neighbors_to_check = int(n)
+
+    def get_adjust_for_word_uniqueness(self):
+        return self.adjust_for_word_uniqueness
+
+    def get_neighbors_to_check(self):
+        return self.neighbors_to_check
 
     def get_wikipedia_page_links(self, page_title):
         # Fetch the page for the given title
@@ -177,7 +199,7 @@ class wikiApi:
 
         return "Target page not found within the connected pages."
 
-wikiInstance = wikiApi()
+wikiInstance = WikiApi()
 #print(wikiInstance.get_proportion_of_common_categories("University of Georgia", "Bulldog"))
 #print(wikiInstance.bfs_search("Mars", "Moon", 4))
 print(wikiInstance.greedy_search("International Olympic Committee", "Android (operating system)", 5))
