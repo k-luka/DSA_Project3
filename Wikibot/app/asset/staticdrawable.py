@@ -13,7 +13,7 @@ class StaticDrawableCreateInfo:
     # Identifying properties
     app: AppInterface
     name: str
-    stage: Union[type[StageType]]
+    stage: Union[type[StageType], StageType]
     # Physical properties
     posPx: Optional[Union[tuple[float, float], tuple[int, int], None]] = None
     dimensionsPx: Optional[Union[tuple[float, float], tuple[int, int]]] = None
@@ -152,6 +152,15 @@ class StaticDrawable(Keyfuncs):
             logging.warning(
                 f' failed to switch {self.__class__.__name__} object \'{self.name}\'s texture to texture [{texture_index}]: '
                 f'texture index is not in range of textures array')
+
+    def switch_to_texture_name(self, texture_name: str) -> None:
+        if texture_name in self.textures:
+            self.texture_name = texture_name
+            self.update()
+        else:
+            logging.warning(
+                f' failed to switch {self.__class__.__name__} object \'{self.name}\'s texture \'{texture_name}\': '
+                f'\'{texture_name}\' is not a registered texture')
 
     def generate_model(self) -> GUI:
         # Generate a model for rendering

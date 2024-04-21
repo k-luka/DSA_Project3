@@ -5,7 +5,9 @@ from typing import Union
 from .appinterface import AppInterface
 from .asset.sprite import Sprite
 from .asset.staticdrawable import StaticDrawable
+from .asset.buttontype import ButtonType
 from .asset.staticbutton import StaticButton
+from .asset.textsprite import TextSprite
 from .assetgenerator import generate_stage_info, generate_asset_info
 from .stages.stage import Stage
 
@@ -20,8 +22,11 @@ class MainLoop:
     key_up_bindings: dict[int, set[Union[type[StaticDrawable], StaticDrawable]]] = dict()
     mouse_down_bindings: dict[int, set[Union[type[StaticButton], StaticButton]]] = dict()
     mouse_up_bindings: dict[int, set[Union[type[StaticButton], StaticButton]]] =dict()
+    click_off_bindings: set[Union[type[TextSprite], TextSprite]] = set()
+    clicked_off: set[Union[type[TextSprite], TextSprite]] = set()
     hover_activate_bindings: set[Union[type[StaticButton], StaticButton]] = set()
     hover_deactivate_bindings: set[Union[type[StaticButton], StaticButton]] = set()
+    text_bindings: set[TextSprite] = set()
     stages: dict[str, Stage] = dict()
     bounded_objects: set[Union[type[StaticButton], StaticButton]] = set()
     hover_activated_objects: set[Union[type[StaticButton], StaticButton]] = set()
@@ -49,12 +54,14 @@ class MainLoop:
 
     def check_app_updates(self) -> None:
         # Check for important update from pygame
+        self.clicked_off.clear()
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 self.app.quit()
 
             elif event.type == pg.KEYDOWN:
                 self.handle_key_down(event.key)
+                self.handle_text_event(event.unicode)
 
             elif event.type == pg.KEYUP:
                 self.handle_key_up(event.key)
@@ -78,7 +85,6 @@ class MainLoop:
             elif interactive_object in self.hover_activated_objects:
                 # Run hover deactivate function if leaving hover
                 self.handle_hover_deactivate_event(interactive_object)
-
 
     def handle_hover_activate_event(self, interactive_object: Union[type[StaticButton], StaticButton]):
         self.hover_activated_objects.add(interactive_object)
@@ -110,6 +116,9 @@ class MainLoop:
         buttons = pg.mouse.get_pressed()
         for clickable in self.mouse_down_bindings[trigger].intersection(self.hover_activated_objects):
             clickable.mouse_down(trigger, buttons)
+        for clickable in self.click_off_bindings.difference(self.clicked_off).difference(self.hover_activated_objects):
+            clickable.click_off(trigger, buttons)
+            self.clicked_off.add(clickable)
 
     def handle_mouse_up(self, trigger: int) -> None:
         if trigger not in self.mouse_up_bindings.keys():
@@ -117,6 +126,11 @@ class MainLoop:
         buttons = pg.mouse.get_pressed()
         for clickable in self.mouse_up_bindings[trigger].intersection(self.hover_activated_objects):
             clickable.mouse_up(trigger, buttons)
+
+    def handle_text_event(self, unicode: int) -> None:
+        keys = pg.key.get_pressed()
+        for textbox in self.text_bindings:
+            textbox.text_func(unicode, keys)
 
     def execute(self) -> None:
         # Main overarching code for app loop
@@ -224,3 +238,30 @@ class MainLoop:
 
     def remove_sprite_from_stage(self, sprite: Sprite, stage: Stage):
         self.stages[stage.name].destroy_sprite(sprite)
+
+    def get_stage(self, stage_name):
+        return self.stages[stage_name]
+
+    def activate_custom_cursor(self):
+        for stage in self.stages.values():
+            if "custom_cursor" in stage.asset_dictionary.keys() and stage.state > -1:
+                stage.set_viewable("custom_cursor")
+                return
+
+    def deactivate_custom_cursor(self):
+        for stage in self.stages.values():
+            if "custom_cursor" in stage.asset_dictionary.keys() and stage.state > -1:
+                stage.unset_viewable("custom_cursor")
+                return
+
+    def add_text_binding(self, textbox):
+        self.text_bindings.add(textbox)
+
+    def remove_text_binding(self, textbox):
+        self.text_bindings.remove(textbox)
+
+    def add_co_binding(self, clickable):
+        self.click_off_bindings.add(clickable)
+
+    def remove_co_binding(self, clickable):
+        self.click_off_bindings.remove(clickable)

@@ -34,9 +34,9 @@ class Link:
         difference_x = (target_x - source_x)
         difference_y = (target_y - source_y)
         # Set unit size, head ratio, and target separation distance
-        unit_size = 3
+        unit_size = 2
         head_ratio = 3
-        target_sep_dist = 8
+        target_sep_dist = 6
         # Compute arrow width/height based on unit_size and difference vector
         distance = math.hypot(difference_x, difference_y)
         length = distance - target_sep_dist * unit_size

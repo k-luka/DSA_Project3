@@ -13,6 +13,7 @@ class NodeCreateInfo:
     title: str
     stage: ...
     center: tuple[float, float]
+    indices: tuple[int, int]
 
 
 class Node(NodeType):
@@ -21,11 +22,13 @@ class Node(NodeType):
     title: str
     position: tuple[float, float]
     position_center: tuple[float, float]
-    size: Union[int, float] = 15
+    size: Union[int, float] = 10
     out_links: set[Node] = set()
     out_link_drawings: set[Link] = set()
     in_links: set[Node] = set()
     sprite: Sprite
+    indices: tuple[int, int]
+    grid_neighbors: list[Node] = list()
 
     def __init__(self, info: NodeCreateInfo):
         self.title = info.title
@@ -33,6 +36,7 @@ class Node(NodeType):
         self.stage = info.stage
         self.position_center = info.center
         self.position = (self.position_center[0] - self.size * 0.5, self.position_center[1] - self.size * 0.5)
+        self.indices = info.indices
         sprite_create_info = SpriteCreateInfo(
             app=info.app,
             name=f"{info.title}_wiki_page",
@@ -55,6 +59,9 @@ class Node(NodeType):
         self.out_links.add(linked_node)
         link_info = LinkCreateInfo(self, linked_node)
         self.out_link_drawings.add(Link(link_info))
+
+    def add_neighbor(self, coordinates):
+        self.grid_neighbors.append(coordinates)
 
     def add_link_in(self, link: Node):
         self.in_links.add(link)

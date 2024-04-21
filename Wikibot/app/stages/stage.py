@@ -8,16 +8,21 @@ from ..asset.staticbutton import StaticButton, StaticButtonCreateInfo
 from ..asset.staticdrawable import StaticDrawable, StaticDrawableCreateInfo
 from ..asset.staticimage import StaticImage, StaticImageCreateInfo
 from ..asset.statictext import StaticText, StaticTextCreateInfo
+from ..asset.statictextbutton import StaticTextButton, StaticTextButtonCreateInfo
+from ..asset.textsprite import TextSprite, TextSpriteCreateInfo
 from ..appinterface import AppInterface
 from .stagefuncs import StageFuncs
 from .stagekeyfuncs import StageKeyFuncs
 from .stagetype import StageType
 
+
 @dataclass()
 class AssetCreateInfo:
     asset_info: Union[ButtonCreateInfo, SpriteCreateInfo, StaticButtonCreateInfo,
-                StaticDrawableCreateInfo, StaticImageCreateInfo, StaticTextCreateInfo]
-    asset_type: type[Union[ButtonType, Sprite, StaticButton, StaticDrawable, StaticImage, StaticText]]
+                      StaticDrawableCreateInfo, StaticImageCreateInfo, StaticTextCreateInfo,
+                      StaticTextButtonCreateInfo, TextSpriteCreateInfo]
+    asset_type: type[Union[ButtonType, Sprite, StaticButton, StaticDrawable, StaticImage,
+                           StaticText, StaticTextButton, TextSprite]]
     start_visible: Optional[bool] = False
 
 
@@ -37,7 +42,8 @@ class Stage(StageType, StageFuncs, StageKeyFuncs):
     stage_func: Callable[[], None]
     kdfs: Optional[dict[int, Callable[[int, Sequence[bool]], None]]] = field(init=False, default=None)
     kufs: Optional[dict[int, Callable[[int, Sequence[bool]], None]]] = field(init=False, default=None)
-    asset_dictionary: dict[str, ...] = dict()
+    asset_dictionary: dict[str, Union[ButtonType, Sprite, StaticButton, StaticDrawable, StaticImage,
+                                      StaticText, StaticTextButton, TextSprite]] = dict()
 
     def __init__(self, info: StageCreateInfo):
         self.app = info.app
@@ -51,11 +57,13 @@ class Stage(StageType, StageFuncs, StageKeyFuncs):
         if stage_func is None:
             self.stage_func = getattr(self, f'{self.name}', None)
             if self.stage_func is None:
-                logging.critical(f' Failed to load stage function \'{self.name}\' for stage \'{self.name}\': StageFunc does not exist')
+                logging.critical(
+                    f' Failed to load stage function \'{self.name}\' for stage \'{self.name}\': StageFunc does not exist')
         else:
             self.stage_func = getattr(self, stage_func, None)
             if self.stage_func is None:
-                logging.critical(f' Failed to load stage function \'{stage_func}\' for stage \'{self.name}\': StageFunc does not exist')
+                logging.critical(
+                    f' Failed to load stage function \'{stage_func}\' for stage \'{self.name}\': StageFunc does not exist')
 
     def _initialize_kdfs(self, string_kdfs) -> None:
         # Exit if string_kdfs does not exist key
@@ -91,7 +99,8 @@ class Stage(StageType, StageFuncs, StageKeyFuncs):
 
     def create_asset(self, info: AssetCreateInfo) -> None:
         if info.asset_info.name in self.asset_dictionary:
-            logging.warning(f"Attempting to create an asset with duplicate name {info.asset_info.name}. Overwriting old object")
+            logging.warning(
+                f"Attempting to create an asset with duplicate name {info.asset_info.name}. Overwriting old object")
             # del self.asset_dictionary[info.asset_info.name]
         self.asset_dictionary[info.asset_info.name] = info.asset_type(info.asset_info)
         asset = self.asset_dictionary[info.asset_info.name]
@@ -169,4 +178,16 @@ class Stage(StageType, StageFuncs, StageKeyFuncs):
             doomed_sprite.unload()
         del self.asset_dictionary[doomed_sprite.name]
 
+    def set_viewable(self, asset_name):
+        if self.state < 0:
+            return
+        asset = self.asset_dictionary[asset_name]
+        if not asset.isViewable:
+            asset.add_to_scene()
 
+    def unset_viewable(self, asset_name):
+        if self.state < 0:
+            return
+        asset = self.asset_dictionary[asset_name]
+        if asset.isViewable:
+            asset.remove_from_scene()
