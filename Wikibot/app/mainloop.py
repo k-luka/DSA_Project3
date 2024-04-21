@@ -224,3 +224,6 @@ class MainLoop:
 
     def remove_sprite_from_stage(self, sprite: Sprite, stage: Stage):
         self.stages[stage.name].destroy_sprite(sprite)
+
+    def get_stage(self, stage_name):
+        return self.stages[stage_name]

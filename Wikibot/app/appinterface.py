@@ -97,6 +97,30 @@ class AppInterface(ABC):
 
     @abstractmethod
     def add_sprite_to_stage(self, sprite, stage, make_viewable: bool = False) -> None: pass
+
+    @abstractmethod
+    def add_node(self, node) -> None: pass
+
+    @abstractmethod
+    def add_link(self, source_node_title, target_node_title) -> None: pass
+
+    @abstractmethod
+    def add_node_with_link(self, source_node_title, target_node) -> None: pass
+
+    @abstractmethod
+    def add_source_node(self, source_node_title) -> None: pass
+
+    @abstractmethod
+    def add_target_node(self, target_node) -> None: pass
+
+    @abstractmethod
+    def get_stage(self, stage_name): pass
+
+    @abstractmethod
+    def get_graph_size(self) -> int: pass
+
+    @abstractmethod
+    def get_random_node_title(self) -> str: pass
     
 
 

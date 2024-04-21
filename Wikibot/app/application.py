@@ -4,6 +4,9 @@ from dataclasses import dataclass
 from .appinterface import AppInterface
 from .mainloop import MainLoop
 from Wikibot.engine.graphics import Graphics
+from Wikibot.graph.graph import Graph
+import random
+
 
 @dataclass()
 class AppCreateInfo:
@@ -12,14 +15,13 @@ class AppCreateInfo:
     working_directory: str
     debug_level: int
 
+
 class Application(AppInterface):
     graphics: Graphics
     mainloop: MainLoop
-    # keys: AppKeys
-    # mouse: AppMouse
+    graph: Graph
     running: bool
     appClock: pg.time.Clock
-
 
     def __init__(self, info: AppCreateInfo):
         pg.init()
@@ -30,6 +32,7 @@ class Application(AppInterface):
         # self.mouse = AppMouse()
         self.running = True
         self.appClock = pg.time.Clock()
+        self.graph = Graph(self, "main_menu")
 
     def add_key_down_binding(self, trigger, drawable) -> None:
         self.mainloop.add_kd_binding(trigger, drawable)
@@ -128,6 +131,32 @@ class Application(AppInterface):
 
     def add_sprite_to_stage(self, sprite, stage, make_viewable: bool = False) -> None:
         self.mainloop.add_sprite_to_stage(sprite, stage, make_viewable)
+
+    def add_node(self, node_title) -> None:
+        self.graph.add_node(node_title)
+
+    def add_link(self, source_node_title, target_node_title) -> None:
+        self.graph.add_link(source_node_title, target_node_title)
+
+    def add_node_with_link(self, source_node_title, target_node_title) -> None:
+        self.graph.add_node_with_in_link(source_node_title, target_node_title)
+
+    def get_stage(self, stage_name):
+        return self.mainloop.get_stage(stage_name)
+
+    def add_source_node(self, source_node_title) -> None:
+        self.graph.add_source_node(source_node_title)
+
+    def add_target_node(self, target_node) -> None:
+        self.graph.add_target_node(target_node)
+
+    def get_graph_size(self) -> int:
+        return len(self.graph.nodes)
+
+    def get_random_node_title(self) -> str:
+        random_title_index = random.randint(0, self.get_graph_size() - 2)
+        random_title = [title for title in self.graph.nodes if title != "node_1"][random_title_index]
+        return random_title
 
     def quit(self) -> None:
         self.running = False
