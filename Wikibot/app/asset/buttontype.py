@@ -102,8 +102,9 @@ class ButtonType(ButtonFuncs):
         if self.cafs is not None and button in self.cafs and self.cafs[button] is not None:
             self.cafs[button](button, buttons)
 
-
     def mouse_up(self, button: int, buttons: tuple[bool, bool, bool] | tuple[bool, bool, bool, bool, bool]) -> None:
         # If a mouse button comes up, runs click-activate-functions corresponding to the mouse button that clicked it
         if self.cdfs is not None and button in self.cdfs and self.cdfs[button] is not None:
             self.cdfs[button](button, buttons)
+
+    def switch_to_texture(self, value: int) -> None: pass

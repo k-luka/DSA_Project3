@@ -22,7 +22,7 @@ class Node(NodeType):
     title: str
     position: tuple[float, float]
     position_center: tuple[float, float]
-    size: Union[int, float] = 15
+    size: Union[int, float] = 10
     out_links: set[Node] = set()
     out_link_drawings: set[Link] = set()
     in_links: set[Node] = set()

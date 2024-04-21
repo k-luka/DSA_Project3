@@ -12,7 +12,7 @@ class Graph(GraphType):
     node_indices: dict[tuple[int, int], Node] = dict()
     nodes: dict[str, Node] = dict()
     offset: tuple[float, float] = None
-    node_region_radius: float = 30
+    node_region_radius: float = 15
     grid_transform_scale: tuple[float, float] = (1.5, 0.5 * math.sqrt(3))
     grid_min_x: int = None
     grid_max_x: int = None

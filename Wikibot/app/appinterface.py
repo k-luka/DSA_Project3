@@ -1,6 +1,7 @@
 import logging
 from abc import ABC, abstractmethod
 from Wikibot.engine.graphics import Graphics
+import pygame as pg
 
 class AppInterface(ABC):
     graphics: Graphics
@@ -121,6 +122,27 @@ class AppInterface(ABC):
 
     @abstractmethod
     def get_random_node_title(self) -> str: pass
+
+    @abstractmethod
+    def switch_cursor_to_custom(self) -> None: pass
+
+    @abstractmethod
+    def switch_cursor_to_normal(self) -> None: pass
+
+    @abstractmethod
+    def add_text_binding(self, textbox) -> None: pass
+
+    @abstractmethod
+    def remove_text_binding(self, textbox) -> None: pass
+
+    @abstractmethod
+    def add_click_off_binding(self, clickable) -> None: pass
+
+    @abstractmethod
+    def remove_click_off_binding(self, clickable) -> None: pass
+
+    @abstractmethod
+    def get_texture(self, texture_name) -> pg.Surface: pass
     
 
 

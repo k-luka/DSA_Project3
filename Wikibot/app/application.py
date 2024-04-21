@@ -52,6 +52,9 @@ class Application(AppInterface):
     def add_hover_deactivate_binding(self, hoverable) -> None:
         self.mainloop.add_hd_binding(hoverable)
 
+    def add_text_binding(self, textbox) -> None:
+        self.mainloop.add_text_binding(textbox)
+
     def remove_key_down_binding(self, trigger, drawable) -> None:
         self.mainloop.remove_kd_binding(trigger, drawable)
 
@@ -69,6 +72,9 @@ class Application(AppInterface):
 
     def remove_hover_deactivate_binding(self, hoverable) -> None:
         self.mainloop.add_hd_binding(hoverable)
+
+    def remove_text_binding(self, textbox) -> None:
+        self.mainloop.remove_text_binding(textbox)
 
     def list_bounded_object(self, bounded_object) -> None:
         self.mainloop.add_bounded_object(bounded_object)
@@ -157,6 +163,23 @@ class Application(AppInterface):
         random_title_index = random.randint(0, self.get_graph_size() - 2)
         random_title = [title for title in self.graph.nodes if title != "node_1"][random_title_index]
         return random_title
+
+    def switch_cursor_to_custom(self):
+        pg.mouse.set_visible(False)
+        self.mainloop.activate_custom_cursor()
+
+    def switch_cursor_to_normal(self):
+        pg.mouse.set_visible(True)
+        self.mainloop.deactivate_custom_cursor()
+
+    def add_click_off_binding(self, clickable) -> None:
+        self.mainloop.add_co_binding(clickable)
+
+    def remove_click_off_binding(self, clickable) -> None:
+        self.mainloop.remove_co_binding(clickable)
+
+    def get_texture(self, texture_name) -> pg.Surface:
+        return self.graphics.mesh.texture.textures[texture_name]
 
     def quit(self) -> None:
         self.running = False
