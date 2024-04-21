@@ -1,6 +1,8 @@
 import wikipediaapi
 import re
 from collections import Counter, deque
+import heapq
+import wordfreq
 
 class wikiApi:
     def __init__(self):
@@ -126,7 +128,7 @@ class wikiApi:
             linksAndProportions[link] = proportion
             # print(str(link) + " : " + str(len(sourceCategories)))
         return dict(sorted(linksAndProportions.items(), key=lambda item: item[1], reverse=True))
-
+    '''
     def get_n_most_connected_links_by_categories(self, current_page, target_page, n):
         # Look for n * 3 most connected articles by word similarities
         related_links = self.get_n_first_similarity_index_of_links(current_page, target_page, n*2)
@@ -142,7 +144,7 @@ class wikiApi:
             linksAndProportions[link] = proportion
             # print(str(link) + " : " + str(len(sourceCategories)))
         return dict(sorted(linksAndProportions.items(), key=lambda item: item[1], reverse=True))
-
+    '''
     def bfs_search(self, starting_page, target_page, n):
         queue = deque([starting_page])  # Queue to manage the frontier pages
         visited = set()  # Set to keep track of visited pages to avoid cycles
@@ -180,12 +182,52 @@ class wikiApi:
 
         return "Target page not found within the connected pages."
 
+    def greedy_search(self, starting_page, target_page, n):
+        # Max heap representing our nodes to visit. Similarity indices will be inserted as
+        # negative values so the min heap returns the values with actually the most similarity
+        priorityQueue = []
+        heapq.heappush(priorityQueue, (0, starting_page))
+        visited = set()  # Set to keep track of visited pages to avoid cycles
+        levels = 0
+
+        while priorityQueue:
+            current_page = heapq.heappop(priorityQueue)[1]
+
+            # Skip revisiting pages
+            if current_page in visited:
+                continue
+            visited.add(current_page)
+
+            #completedLevelsSize = sum([n**i for i in range(0, levels+1)])
+            #if len(visited) - 1 == completedLevelsSize:
+            #    levels += 1
+
+            # Get the top 'n' similar linked pages from the current page
+            try:
+                related_links = self.get_n_first_similarity_index_of_links(current_page, target_page, n)
+                # Check if the current page is the target page
+                print(str(current_page) + " links to " + str(related_links))
+                if target_page.upper() in [word.upper() for word in related_links.keys()]:
+                    return f"Target page '{target_page}' found starting from '{starting_page}'. Distance = {levels+1}"
+
+            except Exception as e:
+                print(f"Failed to retrieve or process links for {current_page}: {e}")
+                continue
+
+            # Enqueue unvisited linked pages
+            for page, similarity_index in related_links.items():
+                if page not in visited:
+                    heapq.heappush(priorityQueue, (-1 * similarity_index, page))
+
+        return "Target page not found within the connected pages."
 
 
 wikiInstance = wikiApi()
 #print(wikiInstance.get_proportion_of_common_categories("University of Georgia", "Bulldog"))
 #print(wikiInstance.bfs_search("Mars", "Moon", 4))
-print(wikiInstance.bfs_search("Georgia", "Strawberry", 5))
+#print(wikiInstance.greedy_search("UK Singles Chart", "Buffalo, New York", 5))
+
+print(wordfreq.word_frequency("the", "en"))
 '''
 # Example usage
 
