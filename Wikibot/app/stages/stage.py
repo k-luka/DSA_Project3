@@ -217,3 +217,33 @@ class Stage(StageType, StageFuncs, StageKeyFuncs):
             asset.update_text(alt_text)
         elif asset.isViewable and asset.text == alt_text:
             asset.update_text(primary_text)
+
+    def get_title_text(self, text_box: str) -> Optional[str]:
+        if self.state < 0:
+            return None
+        asset: TextSprite = self.asset_dictionary[text_box]
+        if asset.isClicked and asset.text != "":
+            return asset.text
+        else:
+            return None
+
+    def get_digit_text(self, text_box: str) -> Optional[str]:
+        if self.state < 0:
+            return None
+        asset: TextSprite = self.asset_dictionary[text_box]
+        if len(asset.text) == 1 and asset.text.isdigit():
+            return asset.text
+        else:
+            return None
+
+    def sprite_using_texture(self, sprite: str, texture_id: int) -> bool:
+        if self.state < 0:
+            return None
+        asset: Sprite = self.asset_dictionary[sprite]
+        return asset.texture_name == asset.textures[texture_id]
+
+    def sprite_using_texture_name(self, sprite: str, texture: str) -> bool:
+        if self.state < 0:
+            return None
+        asset: Sprite = self.asset_dictionary[sprite]
+        return asset.texture_name == texture

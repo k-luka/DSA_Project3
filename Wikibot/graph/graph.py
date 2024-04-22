@@ -222,3 +222,6 @@ class Graph(GraphType):
         self.nodes[node_title] = self.target_node
         self.node_indices[target_node_indices] = self.target_node
         self.inform_grid_neighbors(self.target_node, target_node_indices)
+
+    def construct_from_adjacency_list(self, adjacency_list):
+        pass

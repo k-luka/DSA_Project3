@@ -66,7 +66,7 @@ class WikiApi:
             self.word_frequency = dict(sorted(word_counts.items(), key=lambda item: item[1], reverse=True))
             return self.word_frequency
 
-    def __init__(self, src, tgt, word_uniqueness = True, neighbors_checked = 5):
+    def __init__(self, src, tgt, word_uniqueness = True, neighbors_checked = 5, use_bfs = False):
         # Initialize the Wikipedia API
         self.wiki = wikipediaapi.Wikipedia('DSA_Project3', 'en')
         # List of common stop words to exclude
@@ -84,6 +84,7 @@ class WikiApi:
         self.target_page_obj.get_word_frequency()
         self.adjacency_list = {}
         self.set_of_all_visited_sites = set()
+        self.use_bfs = use_bfs
 
     # Sets starting page
     def set_source_page(self, src):
@@ -287,11 +288,19 @@ class WikiApi:
 
         return "Target page not found within the connected pages."
 
-wikiInstance = WikiApi("Data structure", "Alligator")
-# Yields path of length 6 in a few minutes
-print(wikiInstance.bfs_search())
-wikiInstance.print_summary()
-print("-------------------------")
-# Yields path of length 10 in a few seconds
-print(wikiInstance.greedy_search())
-wikiInstance.print_summary()
+    def search(self):
+        if self.use_bfs:
+            self.bfs_search()
+        else:
+            self.greedy_search()
+
+
+if __name__ == '__main__':
+    wikiInstance = WikiApi("Data structure", "Alligator")
+    # Yields path of length 6 in a few minutes
+    print(wikiInstance.bfs_search())
+    wikiInstance.print_summary()
+    print("-------------------------")
+    # Yields path of length 10 in a few seconds
+    print(wikiInstance.greedy_search())
+    wikiInstance.print_summary()

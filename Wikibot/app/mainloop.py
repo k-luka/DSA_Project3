@@ -314,3 +314,63 @@ class MainLoop:
             if "uniqueness_enabled_text" in stage.asset_dictionary.keys() and stage.state > -1:
                 stage.swap_text("uniqueness_enabled_text", 'Enabled', 'Disabled')
                 return
+
+    def get_source(self) -> Optional[str]:
+        for stage in self.stages.values():
+            if "source_text_box" in stage.asset_dictionary.keys() and stage.state > -1:
+                source = stage.get_title_text("source_text_box")
+                if source is None:
+                    logging.warning("Failed to get source article title")
+                else:
+                    logging.info(f"Found source article title: \"{source}\"")
+                return source
+        logging.warning("Failed to find source_text_box text sprite in any stage")
+        return None
+
+    def get_target(self) -> Optional[str]:
+        for stage in self.stages.values():
+            if "target_text_box" in stage.asset_dictionary.keys() and stage.state > -1:
+                target = stage.get_title_text("target_text_box")
+                if target is None:
+                    logging.warning("Failed to get target article title")
+                else:
+                    logging.info(f"Found target article title: \"{target}\"")
+                return target
+        logging.warning("Failed to find target_text_box text sprite in any stage")
+        return None
+
+    def get_search_breadth(self) -> Optional[int]:
+        for stage in self.stages.values():
+            if "number_box" in stage.asset_dictionary.keys() and stage.state > -1:
+                number = stage.get_digit_text("number_box")
+                if number is None:
+                    logging.warning("Failed to get search depth")
+                else:
+                    logging.info(f"Found search depth: {number}")
+                    number = int(number)
+                return number
+        logging.warning("Failed to find number_box text sprite in any stage")
+        return None
+
+    def get_word_weighting_mode(self) -> bool:
+        for stage in self.stages.values():
+            if "uniqueness_switch" in stage.asset_dictionary.keys() and stage.state > -1:
+                weight_unique = stage.sprite_using_texture_name("uniqueness_switch", "switch_on.png")
+                logging.info(f"Found word uniqueness weighting mode: {weight_unique}")
+                return weight_unique
+        logging.warning("Failed to find uniqueness_switch sprite in any stage")
+        return None
+
+    def get_search_algorithm(self) -> bool:
+        for stage in self.stages.values():
+            if "mode_display_text" in stage.asset_dictionary.keys() and stage.state > -1:
+                mode = stage.get_text("mode_display_text")
+                logging.info(f"Found word uniqueness weighting mode: {mode}")
+                if mode == "BFS":
+                    return True
+                elif mode == "Greedy":
+                    return False
+                else:
+                    return None
+        logging.warning("Failed to find mode_display_text sprite in any stage")
+        return None

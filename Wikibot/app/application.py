@@ -6,6 +6,8 @@ from .mainloop import MainLoop
 from Wikibot.engine.graphics import Graphics
 from Wikibot.graph.graph import Graph
 import random
+from typing import Optional
+from Wikibit.wikiapi.wikiAPI_functions import WikiApi
 
 
 @dataclass()
@@ -20,6 +22,7 @@ class Application(AppInterface):
     graphics: Graphics
     mainloop: MainLoop
     graph: Graph
+    wikiapi: Optional[WikiApi]
     running: bool
     appClock: pg.time.Clock
 
@@ -33,6 +36,7 @@ class Application(AppInterface):
         self.running = True
         self.appClock = pg.time.Clock()
         self.graph = Graph(self, "main_menu")
+        self.wikiapi = None
 
     def add_key_down_binding(self, trigger, drawable) -> None:
         self.mainloop.add_kd_binding(trigger, drawable)
@@ -204,6 +208,36 @@ class Application(AppInterface):
 
     def switch_uniqueness_mode(self) -> None:
         self.mainloop.switch_uniqueness_mode()
+
+    def generate_api(self) -> None:
+        source_article = self.get_source()
+        target_article = self.get_article()
+        search_breadth = self.get_search_breadth()
+        unique_word_weighting = self.get_word_weighting_mode()
+        algorithm_is_bfs = self.get_search_algorithm()
+        if source_article is None or target_article is None or search_breadth is None: return
+        self.wikiapi = WikiApi(source_article, target_article, unique_word_weighting, search_breadth, algorithm_is_bfs)
+        self.wikiapi.search()
+        adjacency_list = self.wikiapi.get_adjacency_list()
+        # self.construct_graph_from_adjacency_list(adjacency_list)
+
+    def get_source(self) -> Optional[str]:
+        return self.mainloop.get_source_article()
+
+    def get_target(self) -> Optional[str]:
+        return self.mainloop.get_target_article()
+
+    def get_search_breadth(self) -> Optional[int]:
+        return self.mainloop.get_search_breadth()
+
+    def get_word_weighting_mode(self) -> bool:
+        return self.mainloop.get_word_weighting_mode()
+
+    def get_search_algorithm(self) -> bool:
+        return self.mainloop.get_search_algorithm()
+
+    def construct_graph_from_adjacency_list(self, adjacency_list) -> None:
+        self.graph.construct_from_adjacency_list(adjacency_list)
 
     def quit(self) -> None:
         self.running = False

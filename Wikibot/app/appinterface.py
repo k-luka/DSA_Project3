@@ -168,3 +168,24 @@ class AppInterface(ABC):
     @abstractmethod
     def switch_uniqueness_mode(self) -> None: pass
 
+    @abstractmethod
+    def generate_api(self) -> None: pass
+
+    @abstractmethod
+    def get_source(self) -> Optional[str]: pass
+
+    @abstractmethod
+    def get_target(self) -> Optional[str]: pass
+
+    @abstractmethod
+    def get_search_breadth(self) -> Optional[int]: pass
+
+    @abstractmethod
+    def get_word_weighting_mode(self) -> bool: pass
+
+    @abstractmethod
+    def get_search_algorithm(self) -> bool: pass
+
+    @abstractmethod
+    def construct_graph_from_adjacency_list(self, adjacency_list) -> None: pass
+
