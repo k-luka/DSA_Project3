@@ -1,7 +1,9 @@
+import logging
+
 from .node import Node, NodeCreateInfo
 from ..app.appinterface import AppInterface
 from .graphtype import GraphType
-from typing import Union
+from typing import Union, Optional
 import math
 import random
 
@@ -12,14 +14,14 @@ class Graph(GraphType):
     node_indices: dict[tuple[int, int], Node] = dict()
     nodes: dict[str, Node] = dict()
     offset: tuple[float, float] = None
-    node_region_radius: float = 15
+    node_region_radius: float = 12
     grid_transform_scale: tuple[float, float] = (1.5, 0.5 * math.sqrt(3))
     grid_min_x: int = None
     grid_max_x: int = None
     grid_min_y: int = None
     grid_max_y: int = None
-    source_node: Node
-    target_node: Node
+    source_node: Optional[Node] = None
+    target_node: Optional[Node] = None
 
     def __init__(self, app: Union[type[AppInterface], AppInterface], stage_name):
         self.app = app
@@ -27,14 +29,14 @@ class Graph(GraphType):
         scr_x, scr_y = app.win_size()
         max_dix = scr_x / (self.node_region_radius * self.grid_transform_scale[0])
         self.grid_max_x = round(max_dix)
-        self.grid_min_x = 0
+        self.grid_min_x = round(self.grid_max_x / 2)
         max_diy = scr_y / (self.node_region_radius * self.grid_transform_scale[1])
         self.grid_max_y = round(max_diy)
         self.grid_min_y = 0
         
     def generate_source_node_indices(self):
         return self.round_scr_coords(
-            self.app.win_size()[0] * 0.1,
+            self.app.win_size()[0] * 0.4333,
             self.app.win_size()[1] * 0.5
         )
 
@@ -208,9 +210,7 @@ class Graph(GraphType):
         
     def add_target_node(self, node_title):
         target_node_indices = self.generate_target_node_indices()
-        print(f"Adding target node at {target_node_indices}")
         target_node_coords = self.get_position_from_grid_coordinates(target_node_indices)
-        print(f"Target coordinates: {target_node_coords}")
         create_info = NodeCreateInfo(
             app=self.app,
             title=node_title,
@@ -223,5 +223,22 @@ class Graph(GraphType):
         self.node_indices[target_node_indices] = self.target_node
         self.inform_grid_neighbors(self.target_node, target_node_indices)
 
-    def construct_from_adjacency_list(self, adjacency_list):
-        pass
+    def construct_from_adjacency_list(self, source_title: str, target_title: str, adjacency_list: dict[str, list[str]]):
+        self.add_source_node(source_title)
+        self.add_target_node(target_title)
+        for title, outlinks in adjacency_list.items():
+            if not title in self.nodes.keys():
+                self.add_node(title)
+            for link in outlinks:
+                if link in self.nodes.keys():
+                    self.add_link(title, link)
+                else:
+                    self.add_node_with_in_link(title, link)
+
+    def clear(self):
+        for node in self.nodes.values():
+            node.destroy()
+        self.nodes = dict()
+        self.node_indices = dict()
+        self.source_node = None
+        self.target_node = None

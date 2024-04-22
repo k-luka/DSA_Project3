@@ -1,14 +1,14 @@
 import logging
 import pygame as pg
 from dataclasses import field
-from typing import Union
+from typing import Union, Optional
 from .appinterface import AppInterface
 from .asset.sprite import Sprite
 from .asset.staticdrawable import StaticDrawable
 from .asset.buttontype import ButtonType
 from .asset.staticbutton import StaticButton
 from .asset.textsprite import TextSprite
-from .assetgenerator import generate_stage_info, generate_asset_info
+from .assetgenerator import generate_stage_info, generate_asset_info, initial_assets
 from .stages.stage import Stage
 
 
@@ -222,6 +222,7 @@ class MainLoop:
     def remove_bounded_object(self, bounded_object):
         if bounded_object not in self.bounded_objects:
             logging.warning(f"Failed to remove bounded object '{bounded_object.name}' from bounded object list: Object is not in bounded object list")
+            return
         self.bounded_objects.remove(bounded_object)
 
     def add_static_drawable(self, drawable):
@@ -231,6 +232,7 @@ class MainLoop:
         if drawable not in self.drawings:
             logging.warning(
                 f"Failed to remove {drawable.__class__.__name__} object '{drawable.name}' from static drawable object list: Object is not in static drawable object list")
+            return
         self.drawings.remove(drawable)
 
     def add_sprite_to_stage(self, sprite: Sprite, stage: Stage, make_viewable: bool = False):
@@ -374,3 +376,14 @@ class MainLoop:
                     return None
         logging.warning("Failed to find mode_display_text sprite in any stage")
         return None
+
+    def reset(self):
+        for stage in self.stages.values():
+            initial_asset_names = initial_assets(stage.name)
+            assets_to_destroy = list()
+            for asset in stage.asset_dictionary.keys():
+                if asset not in initial_asset_names:
+                    stage.asset_dictionary[asset].remove_from_scene()
+                    assets_to_destroy.append(stage.asset_dictionary[asset])
+            for asset in assets_to_destroy:
+                stage.destroy_asset(asset)

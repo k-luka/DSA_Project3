@@ -1,6 +1,7 @@
 import logging
 from abc import ABC, abstractmethod
 from Wikibot.engine.graphics import Graphics
+from typing import Optional
 import pygame as pg
 
 class AppInterface(ABC):
@@ -187,5 +188,11 @@ class AppInterface(ABC):
     def get_search_algorithm(self) -> bool: pass
 
     @abstractmethod
-    def construct_graph_from_adjacency_list(self, adjacency_list) -> None: pass
+    def construct_graph_from_adjacency_list(self, source_article, target_article, adjacency_list) -> None: pass
+
+    @abstractmethod
+    def reset(self) -> None: pass
+
+    @abstractmethod
+    def remove_sprite_from_stage(self, sprite, stage) -> None: pass
 

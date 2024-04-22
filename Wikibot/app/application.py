@@ -7,7 +7,7 @@ from Wikibot.engine.graphics import Graphics
 from Wikibot.graph.graph import Graph
 import random
 from typing import Optional
-from Wikibit.wikiapi.wikiAPI_functions import WikiApi
+from Wikibot.wikiapi.wikiAPI_functions import WikiApi
 
 
 @dataclass()
@@ -210,22 +210,25 @@ class Application(AppInterface):
         self.mainloop.switch_uniqueness_mode()
 
     def generate_api(self) -> None:
+        self.reset()
         source_article = self.get_source()
-        target_article = self.get_article()
+        target_article = self.get_target()
         search_breadth = self.get_search_breadth()
         unique_word_weighting = self.get_word_weighting_mode()
         algorithm_is_bfs = self.get_search_algorithm()
         if source_article is None or target_article is None or search_breadth is None: return
         self.wikiapi = WikiApi(source_article, target_article, unique_word_weighting, search_breadth, algorithm_is_bfs)
         self.wikiapi.search()
-        adjacency_list = self.wikiapi.get_adjacency_list()
-        # self.construct_graph_from_adjacency_list(adjacency_list)
+        adjacency_list: dict[str, list[str]] = self.wikiapi.get_adjacency_list()
+        proper_source_title = self.wikiapi.get_source_page_title()
+        proper_target_title = self.wikiapi.get_target_page_title()
+        self.construct_graph_from_adjacency_list(proper_source_title, proper_target_title, adjacency_list)
 
     def get_source(self) -> Optional[str]:
-        return self.mainloop.get_source_article()
+        return self.mainloop.get_source()
 
     def get_target(self) -> Optional[str]:
-        return self.mainloop.get_target_article()
+        return self.mainloop.get_target()
 
     def get_search_breadth(self) -> Optional[int]:
         return self.mainloop.get_search_breadth()
@@ -236,8 +239,18 @@ class Application(AppInterface):
     def get_search_algorithm(self) -> bool:
         return self.mainloop.get_search_algorithm()
 
-    def construct_graph_from_adjacency_list(self, adjacency_list) -> None:
-        self.graph.construct_from_adjacency_list(adjacency_list)
+    def construct_graph_from_adjacency_list(self, source_article: str,
+                                            target_article: str,
+                                            adjacency_list: dict[str, list[str]]) -> None:
+        self.graph.construct_from_adjacency_list(source_article, target_article, adjacency_list)
+
+    def remove_sprite_from_stage(self, sprite, stage) -> None:
+        self.mainloop.remove_sprite_from_stage(sprite, stage)
+
+    def reset(self) -> None:
+        self.wikiapi = None
+        self.graph.clear()
+        self.mainloop.reset()
 
     def quit(self) -> None:
         self.running = False

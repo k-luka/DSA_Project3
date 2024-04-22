@@ -118,7 +118,7 @@ class Stage(StageType, StageFuncs, StageKeyFuncs):
             asset.unload()
         if asset.isViewable:
             self.asset_dictionary[asset.name].remove_from_scene()
-        del self.asset_dictionary[asset.name]
+        self.asset_dictionary.pop(asset.name)
 
     def load(self) -> None:
         logging.info(f"Loading stage \'{self.name}\'")
@@ -172,11 +172,12 @@ class Stage(StageType, StageFuncs, StageKeyFuncs):
             new_sprite.add_to_scene()
 
     def destroy_sprite(self, doomed_sprite: Sprite):
-        if doomed_sprite.isViewable:
-            doomed_sprite.remove_from_scene()
-        if self.state > -1:
-            doomed_sprite.unload()
-        del self.asset_dictionary[doomed_sprite.name]
+        if doomed_sprite in self.asset_dictionary:
+            if doomed_sprite.isViewable:
+                doomed_sprite.remove_from_scene()
+            if self.state > -1:
+                doomed_sprite.unload()
+            self.asset_dictionary.pop(doomed_sprite.name)
 
     def set_viewable(self, asset_name):
         if self.state < 0:
@@ -222,7 +223,7 @@ class Stage(StageType, StageFuncs, StageKeyFuncs):
         if self.state < 0:
             return None
         asset: TextSprite = self.asset_dictionary[text_box]
-        if asset.isClicked and asset.text != "":
+        if asset.ever_clicked and asset.text != "":
             return asset.text
         else:
             return None
@@ -247,3 +248,9 @@ class Stage(StageType, StageFuncs, StageKeyFuncs):
             return None
         asset: Sprite = self.asset_dictionary[sprite]
         return asset.texture_name == texture
+
+    def get_text(self, text_box: str) -> str:
+        if self.state < 0:
+            return None
+        asset: TextSprite = self.asset_dictionary[text_box]
+        return asset.text

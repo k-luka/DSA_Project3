@@ -36,12 +36,14 @@ class ButtonFuncs(ABC):
             self.app.quit()
 
     def go(self, *args):
-        if hasattr(self, 'switch_to_texture'):
+        if hasattr(self, 'switch_to_texture') and hasattr(self, 'app'):
             self.switch_to_texture(1)
+            self.app.generate_api()
 
     def reset(self, *args):
-        if hasattr(self, 'switch_to_texture'):
+        if hasattr(self, 'switch_to_texture') and hasattr(self, 'app'):
             self.switch_to_texture(1)
+            self.app.reset()
 
     def select_source_text_box(self, *args):
         if hasattr(self, 'app') and hasattr(self, 'switch_to_texture'):

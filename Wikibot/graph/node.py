@@ -71,3 +71,10 @@ class Node(NodeType):
 
     def get_center(self) -> tuple[float, float]:
         return self.position_center
+
+    def destroy(self):
+        # print(f"Destroying node {self.title}")
+        self.app.remove_sprite_from_stage(self.sprite, self.stage)
+        for link in self.out_link_drawings:
+            link.destroy()
+        self.out_link_drawings = set()

@@ -13,7 +13,7 @@ def generate_stage_info(app: Union[type[AppInterface], AppInterface]) -> list[St
             name="main_menu",
             stage_func=None,
             kdfs=None,
-            kufs={pg.K_ESCAPE: "quit", pg.K_n: "add_node", pg.K_l: "add_node_with_link"}
+            kufs={pg.K_ESCAPE: "quit"} #, pg.K_n: "add_node", pg.K_l: "add_node_with_link"}
         )
     ]
 
@@ -45,6 +45,18 @@ def generate_asset_info(stage: Stage) -> list[AssetCreateInfo]:
         assets.append(generate_asset("ui_menu", stage))
         #assets.append(generate_asset("custom_cursor", stage))
     return assets
+
+
+def initial_assets(stage_name: str) -> list[str]:
+    asset_names = list()
+    if stage_name == "main_menu":
+        asset_names = ["source_text_box", "source_text_box_background", "target_text_box", "target_text_box_background",
+                       "search_breadth_text", "search_breadth_background", "number_box", "number_box_background",
+                       "weight_unique_words_text", "weight_unique_words_background", "uniqueness_enabled_text",
+                       "uniqueness_enabled_text", "uniqueness_enabled_background", "uniqueness_switch", "mode_text",
+                       "mode_text_background", "mode_switch", "mode_display_text", "mode_display_background",
+                       "mode_display_background", "go_button", "reset_button", "exit_button", "ui_menu"]
+    return asset_names
 
 
 def generate_asset(asset_name: str, stage: Stage):

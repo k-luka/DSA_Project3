@@ -108,3 +108,8 @@ class Link:
         self.head = Sprite(head_create_info)
         self.app.add_sprite_to_stage(self.body, self.stage, make_viewable=True)
         self.app.add_sprite_to_stage(self.head, self.stage, make_viewable=True)
+
+    def destroy(self):
+        # print(f"Destroying link between {self.source.title} and {self.target.title}")
+        self.app.remove_sprite_from_stage(self.body, self.stage)
+        self.app.remove_sprite_from_stage(self.head, self.stage)

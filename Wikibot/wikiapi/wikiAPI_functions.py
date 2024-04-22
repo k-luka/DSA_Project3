@@ -294,6 +294,12 @@ class WikiApi:
         else:
             self.greedy_search()
 
+    def get_source_page_title(self) -> str:
+        return self.source_page_obj.title
+
+    def get_target_page_title(self) -> str:
+        return self.target_page_obj.title
+
 
 if __name__ == '__main__':
     wikiInstance = WikiApi("Data structure", "Alligator")
