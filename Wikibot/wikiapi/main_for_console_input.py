@@ -1,43 +1,45 @@
 from wikiAPI_functions import *
 
 def main():
-    wiki = WikiApi()
     while True:
-        print("\nWhat would you like to do?")
-        print("1: Get Wikipedia page text")
-        print("2: Get Wikipedia page links")
-        print("3: Get word frequency on a page")
-        print("4: Get prioritized frequencies based on target page")
-        print("5: Get N first similarity index of links")
+        start_title = input("Enter the starting Wikipedia page title: ")
+        target_title = input("Enter the target Wikipedia page title: ")
+        wiki = WikiApi(start_title, target_title)
+        print("\n-------------------------")
+        print("What would you like to do?")
+        print("1: Get target page text")
+        print("2: Get starting page links")
+        print("3: Get word frequency of target page")
+        print("4: Get top 5 most similar links to target")
+        print("5: Perform BFS")
+        print("6: Perform Greedy search")
         print("0: Exit")
+        print("-------------------------")
         choice = input("Enter your choice (0-5): ")
 
         if choice == "0":
             print("Exiting the program.")
             break
 
-        page_title = input("Enter the Wikipedia page title: ")
-
         if choice == "1":
             print("\nFetching page text...")
-            page_text = wiki.get_wikipedia_page_text(page_title)
-            print(page_text)
+
+            print()
 
         elif choice == "2":
             print("\nFetching page links...")
-            linked_pages = wiki.get_wikipedia_page_links(page_title)
+            linked_pages = wiki.get_wikipedia_page_links()
             print(linked_pages)
 
         elif choice == "3":
             print("\nCalculating word frequency...")
-            frequencies = wiki.get_word_frequency(page_title)
+            frequencies = wiki.get_word_frequency()
             print(frequencies)
             # ex
 
         elif choice == "4":
-            target_page = input("Enter the target page: ")
             print("\nCalculating word frequency...")
-            prioritized_frequencies = wiki.get_prioritized_titles(target_page, page_title)
+            prioritized_frequencies = wiki.get_most_similar_links_to_target(start_title)
             print(prioritized_frequencies)
 
         elif choice == "5":
@@ -45,7 +47,7 @@ def main():
             N = int(input("Enter the number titles you want to know the index of: "))
             print("\nCalculating similarity index of links...")
             wikiInstance = WikiApi()
-            print(wikiInstance.get_n_first_similarity_index_of_links(page_title, target_page, N))
+            print(wikiInstance.get_n_first_similarity_index_of_links(start_title, N))
         else:
             print("Invalid choice. Please choose a valid option.")
 

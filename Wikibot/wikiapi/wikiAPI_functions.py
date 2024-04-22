@@ -5,6 +5,7 @@ import heapq
 import wordfreq
 import math
 
+
 class WikiApi:
     class WikiPage:
         def __init__(self, parent_api, page_title):
@@ -66,7 +67,7 @@ class WikiApi:
             self.word_frequency = dict(sorted(word_counts.items(), key=lambda item: item[1], reverse=True))
             return self.word_frequency
 
-    def __init__(self, src, tgt, word_uniqueness = True, neighbors_checked = 5, use_bfs = False):
+    def __init__(self, src, tgt, word_uniqueness=True, neighbors_checked=5, use_bfs=False):
         # Initialize the Wikipedia API
         self.wiki = wikipediaapi.Wikipedia('DSA_Project3', 'en')
         # List of common stop words to exclude
@@ -159,8 +160,10 @@ class WikiApi:
                 if word in target_words.keys():
                     # Add word times its uniqueness weight
                     word_uniqueness = wordfreq.word_frequency(word, "en")
-                    if word_uniqueness <= 0: word_uniqueness_weight = lambda word: 10
-                    else: word_uniqueness_weight = lambda word: -1 * math.log10(word_uniqueness) - 1
+                    if word_uniqueness <= 0:
+                        word_uniqueness_weight = lambda word: 10
+                    else:
+                        word_uniqueness_weight = lambda word: -1 * math.log10(word_uniqueness) - 1
                     if not self.adjust_for_word_uniqueness: word_uniqueness_weight = lambda word: 1
                     totalFreq += target_words[word] * word_uniqueness_weight(word)
             try:
@@ -172,6 +175,7 @@ class WikiApi:
         links_and_indices = dict(sorted(links_and_indices.items(), key=lambda item: item[1], reverse=True))
         return {x: links_and_indices[x] for x in list(links_and_indices)[:self.neighbors_to_check]}
 
+    # Returns the path taken to get to target
     def trace_path_backwards(self):
         if self.target_page_obj not in self.set_of_all_visited_sites: return None
         current_page_obj = self.target_page_obj
@@ -190,11 +194,15 @@ class WikiApi:
         print("Visited sites: ", end="")
         print(wikiInstance.get_names_of_all_visited_sites())
         print("Ordered Path: ", end="")
-        if wikiInstance.trace_path_backwards() is None: print("None")
-        else: print(" --> ".join(wikiInstance.trace_path_backwards()))
+        if wikiInstance.trace_path_backwards() is None:
+            print("None")
+        else:
+            print(" --> ".join(wikiInstance.trace_path_backwards()))
         print("Path length = " + str(wikiInstance.get_length_of_path()) + ", Number of visited sites = "
               + str(wikiInstance.get_number_of_visited_sites()))
 
+    # Modified BFS which only ads N most similar neighbors to the queue. Since an average page links to 200 others
+    # and some pages are 6 or more connections apart, pure BFS would require an unfeasible number of steps (>200^6).
     def bfs_search(self):
         queue = deque([(self.source_page_obj.title, "")])  # Queue to manage the frontier pages
         self.adjacency_list.clear()
@@ -240,10 +248,13 @@ class WikiApi:
 
         return "Target page not found within the connected pages."
 
+    # Greedy Search makes a min heap (values are negated so technically max heap) of N unexplored but reachable pages
+    # based on their similarity index. At each step, Greedy Search explores the highest rated page. Where N is
+    # determined by the user in "Search Breadth"
     def greedy_search(self):
-        # Max heap representing our nodes to visit. Similarity indices will be inserted as
-        # negative values so the min heap returns the values with actually the most similarity
         priorityQueue = []
+        # Min heap representing our nodes to visit. Similarity indices will be inserted as
+        # negative values so the min heap returns the values with actually the most similarity
         heapq.heappush(priorityQueue, (0, (self.source_page_obj.title, "")))
         self.adjacency_list.clear()
         self.set_of_all_visited_sites.clear()
@@ -304,8 +315,8 @@ class WikiApi:
 if __name__ == '__main__':
     wikiInstance = WikiApi("Data structure", "Alligator")
     # Yields path of length 6 in a few minutes
-    print(wikiInstance.bfs_search())
-    wikiInstance.print_summary()
+    # print(wikiInstance.bfs_search())
+    # wikiInstance.print_summary()
     print("-------------------------")
     # Yields path of length 10 in a few seconds
     print(wikiInstance.greedy_search())
