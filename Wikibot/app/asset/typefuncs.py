@@ -30,7 +30,7 @@ class TypeFuncs(ABC):
     def type_numeric_one_digit(self, unicode: str, *args):
         if len(unicode) != 1:
             return
-        if self.selected and 48 <= ord(unicode) <= 57 and len(self.text) == 0:
+        if self.selected and 49 <= ord(unicode) <= 57 and len(self.text) == 0:
             self.update_text(self.text + unicode)
 
 

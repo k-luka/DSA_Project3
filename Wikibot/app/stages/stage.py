@@ -208,3 +208,12 @@ class Stage(StageType, StageFuncs, StageKeyFuncs):
         asset: TextSprite = self.asset_dictionary[text_box]
         if asset.isViewable:
             asset.deselect()
+
+    def swap_text(self, text_box: str, primary_text: str, alt_text: str):
+        if self.state < 0:
+            return
+        asset: TextSprite = self.asset_dictionary[text_box]
+        if asset.isViewable and asset.text == primary_text:
+            asset.update_text(alt_text)
+        elif asset.isViewable and asset.text == alt_text:
+            asset.update_text(primary_text)

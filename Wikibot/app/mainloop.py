@@ -302,3 +302,15 @@ class MainLoop:
             if "number_box" in stage.asset_dictionary.keys() and stage.state > -1:
                 stage.deselect_text_box("number_box")
                 return
+
+    def switch_search_mode(self) -> None:
+        for stage in self.stages.values():
+            if "mode_display_text" in stage.asset_dictionary.keys() and stage.state > -1:
+                stage.swap_text("mode_display_text", 'BFS', 'Greedy')
+                return
+
+    def switch_uniqueness_mode(self) -> None:
+        for stage in self.stages.values():
+            if "uniqueness_enabled_text" in stage.asset_dictionary.keys() and stage.state > -1:
+                stage.swap_text("uniqueness_enabled_text", 'Enabled', 'Disabled')
+                return

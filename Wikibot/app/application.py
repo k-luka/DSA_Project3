@@ -199,6 +199,12 @@ class Application(AppInterface):
     def deselect_number_box(self) -> None:
         self.mainloop.deselect_number_box()
 
+    def switch_search_mode(self) -> None:
+        self.mainloop.switch_search_mode()
+
+    def switch_uniqueness_mode(self) -> None:
+        self.mainloop.switch_uniqueness_mode()
+
     def quit(self) -> None:
         self.running = False
 

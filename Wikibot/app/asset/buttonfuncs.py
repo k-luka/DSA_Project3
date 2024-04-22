@@ -73,3 +73,13 @@ class ButtonFuncs(ABC):
             self.app.deselect_number_box()
             self.switch_to_texture(0)
 
+    def switch_search_mode(self, *args):
+        self.switch_texture()
+        if hasattr(self, 'app'):
+            self.app.switch_search_mode()
+
+    def switch_uniqueness_mode(self, *args):
+        self.switch_texture()
+        if hasattr(self, 'app'):
+            self.app.switch_uniqueness_mode()
+

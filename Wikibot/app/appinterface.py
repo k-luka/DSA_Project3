@@ -162,3 +162,9 @@ class AppInterface(ABC):
     @abstractmethod
     def deselect_number_box(self) -> None: pass
 
+    @abstractmethod
+    def switch_search_mode(self) -> None: pass
+
+    @abstractmethod
+    def switch_uniqueness_mode(self) -> None: pass
+
