@@ -223,6 +223,19 @@ class Application(AppInterface):
         proper_source_title = self.wikiapi.get_source_page_title()
         proper_target_title = self.wikiapi.get_target_page_title()
         self.construct_graph_from_adjacency_list(proper_source_title, proper_target_title, adjacency_list)
+        path_length: Optional[int] = self.wikiapi.get_length_of_path()
+        if path_length is not None:
+            self.mainloop.set_path_length_display_text(path_length)
+        pages_visited: int = self.wikiapi.get_number_of_visited_sites()
+        self.mainloop.set_visited_pages_display_text(pages_visited)
+        path: Optional[list[str]] = self.wikiapi.trace_path_backwards()
+        if path is not None:
+            print(f"\nSuccessfully found a path from the Wikipedia article \"{proper_source_title}\" to the article \"{proper_target_title}\":")
+            [print('\"' + title + '\"' + ' to ', '') for title in path[:-1]]
+            print(f"\"{path[len(path) - 1]}\"")
+            self.graph.highlight_path(path)
+        else:
+            print(f"\nFailed to find a path from the Wikipedia article \"{proper_source_title}\" to the article \"{proper_target_title}\"")
 
     def get_source(self) -> Optional[str]:
         return self.mainloop.get_source()

@@ -387,3 +387,21 @@ class MainLoop:
                     assets_to_destroy.append(stage.asset_dictionary[asset])
             for asset in assets_to_destroy:
                 stage.destroy_asset(asset)
+
+    def set_path_length_display_text(self, length: int):
+        for stage in self.stages.values():
+            if "path_length_display_text" in stage.asset_dictionary.keys() and stage.state > -1:
+                length_text = str(length)
+                stage.set_text("path_length_display_text", length_text)
+                return
+        logging.warning("Failed to find path_length_display_text text sprite in any stage")
+        return
+
+    def set_visited_pages_display_text(self, pages: int):
+        for stage in self.stages.values():
+            if "visited_pages_display_text" in stage.asset_dictionary.keys() and stage.state > -1:
+                pages_text = str(pages)
+                stage.set_text("visited_pages_display_text", pages_text)
+                return
+        logging.warning("Failed to find visited_pages_display_text text sprite in any stage")
+        return

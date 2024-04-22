@@ -68,7 +68,7 @@ class Link:
             rot = arrow_angle,
             kdfs=None,
             kufs=None,
-            textures=["link_arrow_base.png"],
+            textures=["link_arrow_base.png", "link_arrow_base_highlight.png"],
             haf=None,
             hdf=None,
             cafs=None,
@@ -98,7 +98,7 @@ class Link:
             rot = arrow_angle,
             kdfs=None,
             kufs=None,
-            textures=["link_arrow_head.png"],
+            textures=["link_arrow_head.png", "link_arrow_head_highlight.png"],
             haf=None,
             hdf=None,
             cafs=None,
@@ -113,3 +113,7 @@ class Link:
         # print(f"Destroying link between {self.source.title} and {self.target.title}")
         self.app.remove_sprite_from_stage(self.body, self.stage)
         self.app.remove_sprite_from_stage(self.head, self.stage)
+
+    def highlight(self):
+        self.head.switch_to_texture(1)
+        self.body.switch_to_texture(1)

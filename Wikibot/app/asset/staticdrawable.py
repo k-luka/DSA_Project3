@@ -267,3 +267,8 @@ class StaticDrawable(Keyfuncs):
     def key_up(self, key: int, keys: Sequence[bool]):
         # Activate key-up functions, passing list of lifted keys in
         self.kufs[key](key, keys)
+
+    def moveByPx(self, direction_vec: Union[tuple[float, float], tuple[int, int]]) -> None:
+        self.posPx = tuple(sum(components) for components in zip(self.posPx, direction_vec))
+        self.pos = self.px_to_scr(self.posPx)
+        self.update()

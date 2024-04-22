@@ -35,15 +35,30 @@ class ButtonFuncs(ABC):
         if hasattr(self, 'app'):
             self.app.quit()
 
+    def hide_exit_infobox(self, *args):
+        if hasattr(self, 'switch_to_texture') and hasattr(self, 'app'):
+            self.switch_to_default_texture()
+            # TODO: finish func
+
     def go(self, *args):
         if hasattr(self, 'switch_to_texture') and hasattr(self, 'app'):
             self.switch_to_texture(1)
             self.app.generate_api()
 
+    def hide_go_infobox(self, *args):
+        if hasattr(self, 'switch_to_texture') and hasattr(self, 'app'):
+            self.switch_to_default_texture()
+            # TODO: finish func
+
     def reset(self, *args):
         if hasattr(self, 'switch_to_texture') and hasattr(self, 'app'):
             self.switch_to_texture(1)
             self.app.reset()
+
+    def hide_reset_infobox(self, *args):
+        if hasattr(self, 'switch_to_texture') and hasattr(self, 'app'):
+            self.switch_to_default_texture()
+            # TODO: finish func
 
     def select_source_text_box(self, *args):
         if hasattr(self, 'app') and hasattr(self, 'switch_to_texture'):
@@ -84,4 +99,53 @@ class ButtonFuncs(ABC):
         self.switch_texture()
         if hasattr(self, 'app'):
             self.app.switch_uniqueness_mode()
+
+    def hide_source_infobox(self, *args):
+        pass
+
+    def view_source_infobox(self, *args):
+        pass
+
+    def hide_target_infobox(self, *args):
+        pass
+
+    def view_target_infobox(self, *args):
+        pass
+
+    def hide_search_breadth_infobox(self, *args):
+        pass
+
+    def view_search_breadth_infobox(self, *args):
+        pass
+
+    def hide_uniqueness_switch_infobox(self, *args):
+        pass
+
+    def view_uniqueness_switch_infobox(self, *args):
+        pass
+
+    def hide_mode_infobox(self, *args):
+        pass
+
+    def view_mode_infobox(self, *args):
+        pass
+
+    def view_go_infobox(self, *args):
+        pass
+
+    def view_reset_infobox(self, *args):
+        pass
+
+    def view_exit_infobox(self, *args):
+        pass
+
+
+
+
+
+
+
+
+
+
 

@@ -5,6 +5,7 @@ from ..app.asset.sprite import Sprite, SpriteCreateInfo
 from typing import Union
 from .link import Link, LinkCreateInfo
 from .nodetype import NodeType
+import logging
 
 
 @dataclass()
@@ -37,6 +38,7 @@ class Node(NodeType):
         self.position_center = info.center
         self.position = (self.position_center[0] - self.size * 0.5, self.position_center[1] - self.size * 0.5)
         self.indices = info.indices
+        self.color = "gray"
         sprite_create_info = SpriteCreateInfo(
             app=info.app,
             name=f"{info.title}_wiki_page",
@@ -46,9 +48,9 @@ class Node(NodeType):
             scale=(1, 1),
             kdfs=None,
             kufs=None,
-            textures=["node.png", "node_highlight.png"],
-            haf='switch_to_secondary_texture',
-            hdf='switch_to_default_texture',
+            textures=["node_gray.png", "node_red.png", "node_green.png", "node_blue.png"],
+            haf=None,
+            hdf=None,
             cafs=None,
             cdfs=None,
         )
@@ -78,3 +80,22 @@ class Node(NodeType):
         for link in self.out_link_drawings:
             link.destroy()
         self.out_link_drawings = set()
+
+    def set_color(self, color: str):
+        if color == "gray":
+            self.sprite.switch_to_texture(0)
+        elif color == "red":
+            self.sprite.switch_to_texture(1)
+        elif color == "green":
+            self.sprite.switch_to_texture(2)
+        elif color == "blue":
+            self.sprite.switch_to_texture(3)
+        else:
+            logging.warning(f"Failed to switch node \'{self.title}\' to color \'{color}\': Color is not valid")
+
+    def highlight_link_to(self, node: Node):
+        for link in self.out_link_drawings:
+            if link.target == node:
+                link.highlight()
+                return
+        logging.warning(f"Failed to highlight link between node \'{self.title}\' and node \'{node.title}\'")

@@ -69,7 +69,6 @@ class TextSprite(StaticTextButton):
             self.delist_collision_boundaries()
             self.delist_hover_functions()
             self.delist_click_functions()
-            self.delist_click_off_function()
             self.delist_text_function()
             self.app.remove_model_from_scene(self.model)
         else:
@@ -100,13 +99,19 @@ class TextSprite(StaticTextButton):
             self.app.remove_text_binding(self)
 
     def select(self, *args):
+        if self.selected:
+            return
         self.selected = True
         self.app.add_text_binding(self)
-        if not self.ever_clicked:
+        if not self.ever_clicked or self.text_func == self.type_numeric_one_digit:
             self.ever_clicked = True
             self.update_text('')
+        self.moveByPx((1, 1))
 
 
     def deselect(self, *args):
+        if not self.selected:
+            return
         self.selected = False
         self.app.remove_text_binding(self)
+        self.moveByPx((-1, -1))

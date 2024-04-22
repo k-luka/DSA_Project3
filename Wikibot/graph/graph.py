@@ -207,6 +207,7 @@ class Graph(GraphType):
         self.nodes[node_title] = self.source_node
         self.node_indices[source_node_indices] = self.source_node
         self.inform_grid_neighbors(self.source_node, source_node_indices)
+        self.source_node.set_color("red")
         
     def add_target_node(self, node_title):
         target_node_indices = self.generate_target_node_indices()
@@ -222,6 +223,7 @@ class Graph(GraphType):
         self.nodes[node_title] = self.target_node
         self.node_indices[target_node_indices] = self.target_node
         self.inform_grid_neighbors(self.target_node, target_node_indices)
+        self.target_node.set_color("red")
 
     def construct_from_adjacency_list(self, source_title: str, target_title: str, adjacency_list: dict[str, list[str]]):
         self.add_source_node(source_title)
@@ -234,6 +236,13 @@ class Graph(GraphType):
                     self.add_link(title, link)
                 else:
                     self.add_node_with_in_link(title, link)
+
+    def highlight_path(self, path: Optional[list[str]]):
+        for i, title in enumerate(path[:-1]):
+            self.nodes[title].set_color("green")
+            self.nodes[title].highlight_link_to(self.nodes[path[i + 1]])
+        self.source_node.set_color("blue")
+        self.target_node.set_color("blue")
 
     def clear(self):
         for node in self.nodes.values():

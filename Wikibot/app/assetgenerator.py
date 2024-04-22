@@ -39,6 +39,14 @@ def generate_asset_info(stage: Stage) -> list[AssetCreateInfo]:
         assets.append(generate_asset("mode_switch", stage))
         assets.append(generate_asset("mode_display_text", stage))
         assets.append(generate_asset("mode_display_background", stage))
+        assets.append(generate_asset("path_length_text", stage))
+        assets.append(generate_asset("path_length_text_background", stage))
+        assets.append(generate_asset("path_length_display_text", stage))
+        assets.append(generate_asset("path_length_display_text_background", stage))
+        assets.append(generate_asset("visited_pages_text", stage))
+        assets.append(generate_asset("visited_pages_text_background", stage))
+        assets.append(generate_asset("visited_pages_display_text", stage))
+        assets.append(generate_asset("visited_pages_display_text_background", stage))
         assets.append(generate_asset("go_button", stage))
         assets.append(generate_asset("reset_button", stage))
         assets.append(generate_asset("exit_button", stage))
@@ -55,7 +63,10 @@ def initial_assets(stage_name: str) -> list[str]:
                        "weight_unique_words_text", "weight_unique_words_background", "uniqueness_enabled_text",
                        "uniqueness_enabled_text", "uniqueness_enabled_background", "uniqueness_switch", "mode_text",
                        "mode_text_background", "mode_switch", "mode_display_text", "mode_display_background",
-                       "mode_display_background", "go_button", "reset_button", "exit_button", "ui_menu"]
+                       "mode_display_background", "path_length_text", "path_length_text_background",
+                       "path_length_display_text", "path_length_display_text_background", "visited_pages_text",
+                       "visited_pages_text_background", "visited_pages_display_text",
+                       "visited_pages_display_text_background", "go_button", "reset_button", "exit_button", "ui_menu"]
     return asset_names
 
 
@@ -100,8 +111,8 @@ def generate_asset(asset_name: str, stage: Stage):
             kufs=None,
             textures=["text_box_background_selected.png", "text_box_background.png"],
             haf=None,
-            hdf=None,
-            cafs={1: 'select_source_text_box'},
+            hdf='hide_source_infobox',
+            cafs={1: 'select_source_text_box', 3: 'view_source_infobox'},
             cdfs=None,
             cof='deselect_source_text_box'
         )
@@ -152,8 +163,8 @@ def generate_asset(asset_name: str, stage: Stage):
             kufs=None,
             textures=["text_box_background_selected.png", "text_box_background.png"],
             haf=None,
-            hdf=None,
-            cafs={1: 'select_target_text_box'},
+            hdf='hide_target_infobox',
+            cafs={1: 'select_target_text_box', 3: 'view_target_infobox'},
             cdfs=None,
             cof='deselect_target_text_box'
         )
@@ -204,8 +215,8 @@ def generate_asset(asset_name: str, stage: Stage):
             kufs=None,
             textures=["search_breadth.png"],
             haf=None,
-            hdf=None,
-            cafs=None,
+            hdf='hide_search_breadth_infobox',
+            cafs={3: 'view_search_breadth_infobox'},
             cdfs=None,
             cof=None,
         )
@@ -308,8 +319,8 @@ def generate_asset(asset_name: str, stage: Stage):
             kufs=None,
             textures=["text_box_background_selected.png"],
             haf=None,
-            hdf=None,
-            cafs=None,
+            hdf='hide_uniqueness_switch_infobox',
+            cafs={3: 'view_uniqueness_switch_infobox'},
             cdfs=None,
             cof=None,
         )
@@ -325,7 +336,7 @@ def generate_asset(asset_name: str, stage: Stage):
             app=stage.app,
             name=asset_name,
             stage=stage,
-            posPx=(33, 231),
+            posPx=(35, 231),
             dimensionsPx=(155, 30),
             scale=(1, 1),
             rot=0,
@@ -353,7 +364,7 @@ def generate_asset(asset_name: str, stage: Stage):
             name=asset_name,
             stage=stage,
             posPx=(25, 221),
-            dimensionsPx=(106, 38),
+            dimensionsPx=(108, 38),
             scale=(1, 1),
             rot=0,
             kdfs=None,
@@ -437,8 +448,8 @@ def generate_asset(asset_name: str, stage: Stage):
             kufs=None,
             textures=["algorithm.png"],
             haf=None,
-            hdf=None,
-            cafs=None,
+            hdf='hide_mode_infobox',
+            cafs={3: 'view_mode_infobox'},
             cdfs=None,
             cof=None,
         )
@@ -526,12 +537,220 @@ def generate_asset(asset_name: str, stage: Stage):
             object_type,
             default_viewable
         )
+    elif asset_name == "path_length_text":
+        create_info = TextSpriteCreateInfo(
+            app=stage.app,
+            name=asset_name,
+            stage=stage,
+            posPx=(35, 381),
+            dimensionsPx=(75, 30),
+            scale=(1, 1),
+            rot=0,
+            kdfs=None,
+            kufs=None,
+            cafs=None,
+            cdfs=None,
+            size=30,
+            text='Path Length:',
+            color=(20, 20, 20),
+            background=(134, 134, 134),
+            auto_textbox_scaling=True,
+            text_func=None,
+        )
+        object_type = TextSprite
+        default_viewable = True
+        return AssetCreateInfo(
+            create_info,
+            object_type,
+            default_viewable
+        )
+    elif asset_name == "path_length_text_background":
+        create_info = SpriteCreateInfo(
+            app=stage.app,
+            name=asset_name,
+            stage=stage,
+            posPx=(25, 371),
+            dimensionsPx=(160, 38),
+            scale=(1, 1),
+            rot=0,
+            kdfs=None,
+            kufs=None,
+            textures=["path_length.png"],
+            haf=None,
+            hdf=None,
+            cafs=None,
+            cdfs=None,
+            cof=None,
+        )
+        object_type = Sprite
+        default_viewable = True
+        return AssetCreateInfo(
+            create_info,
+            object_type,
+            default_viewable
+        )
+    elif asset_name == "path_length_display_text":
+        create_info = TextSpriteCreateInfo(
+            app=stage.app,
+            name=asset_name,
+            stage=stage,
+            posPx=(207, 381),
+            dimensionsPx=(58, 30),
+            scale=(1, 1),
+            rot=0,
+            kdfs=None,
+            kufs=None,
+            cafs=None,
+            cdfs=None,
+            size=30,
+            text='',
+            color=(20, 20, 20),
+            background=(134, 134, 134),
+            auto_textbox_scaling=True,
+            text_func=None,
+        )
+        object_type = TextSprite
+        default_viewable = True
+        return AssetCreateInfo(
+            create_info,
+            object_type,
+            default_viewable
+        )
+    elif asset_name == "path_length_display_text_background":
+        create_info = SpriteCreateInfo(
+            app=stage.app,
+            name=asset_name,
+            stage=stage,
+            posPx=(197, 371),
+            dimensionsPx=(78, 38),
+            scale=(1, 1),
+            rot=0,
+            kdfs=None,
+            kufs=None,
+            textures=["path_length_display.png"],
+            haf=None,
+            hdf=None,
+            cafs=None,
+            cdfs=None,
+            cof=None,
+        )
+        object_type = Sprite
+        default_viewable = True
+        return AssetCreateInfo(
+            create_info,
+            object_type,
+            default_viewable
+        )
+    elif asset_name == "visited_pages_text":
+        create_info = TextSpriteCreateInfo(
+            app=stage.app,
+            name=asset_name,
+            stage=stage,
+            posPx=(35, 425),
+            dimensionsPx=(75, 30),
+            scale=(1, 1),
+            rot=0,
+            kdfs=None,
+            kufs=None,
+            cafs=None,
+            cdfs=None,
+            size=30,
+            text='Pages Visited:',
+            color=(20, 20, 20),
+            background=(134, 134, 134),
+            auto_textbox_scaling=True,
+            text_func=None,
+        )
+        object_type = TextSprite
+        default_viewable = True
+        return AssetCreateInfo(
+            create_info,
+            object_type,
+            default_viewable
+        )
+    elif asset_name == "visited_pages_text_background":
+        create_info = SpriteCreateInfo(
+            app=stage.app,
+            name=asset_name,
+            stage=stage,
+            posPx=(25, 415),
+            dimensionsPx=(160, 38),
+            scale=(1, 1),
+            rot=0,
+            kdfs=None,
+            kufs=None,
+            textures=["path_length.png"],
+            haf=None,
+            hdf=None,
+            cafs=None,
+            cdfs=None,
+            cof=None,
+        )
+        object_type = Sprite
+        default_viewable = True
+        return AssetCreateInfo(
+            create_info,
+            object_type,
+            default_viewable
+        )
+    elif asset_name == "visited_pages_display_text":
+        create_info = TextSpriteCreateInfo(
+            app=stage.app,
+            name=asset_name,
+            stage=stage,
+            posPx=(207, 425),
+            dimensionsPx=(58, 30),
+            scale=(1, 1),
+            rot=0,
+            kdfs=None,
+            kufs=None,
+            cafs=None,
+            cdfs=None,
+            size=30,
+            text='',
+            color=(20, 20, 20),
+            background=(134, 134, 134),
+            auto_textbox_scaling=True,
+            text_func=None,
+        )
+        object_type = TextSprite
+        default_viewable = True
+        return AssetCreateInfo(
+            create_info,
+            object_type,
+            default_viewable
+        )
+    elif asset_name == "visited_pages_display_text_background":
+        create_info = SpriteCreateInfo(
+            app=stage.app,
+            name=asset_name,
+            stage=stage,
+            posPx=(197, 415),
+            dimensionsPx=(78, 38),
+            scale=(1, 1),
+            rot=0,
+            kdfs=None,
+            kufs=None,
+            textures=["path_length_display.png"],
+            haf=None,
+            hdf=None,
+            cafs=None,
+            cdfs=None,
+            cof=None,
+        )
+        object_type = Sprite
+        default_viewable = True
+        return AssetCreateInfo(
+            create_info,
+            object_type,
+            default_viewable
+        )
     elif asset_name == "go_button":
         create_info = SpriteCreateInfo(
             app=stage.app,
             name=asset_name,
             stage=stage,
-            posPx=(24, 430),
+            posPx=(24, 487),
             dimensionsPx=(80, 80),
             scale=(1, 1),
             rot=0,
@@ -539,8 +758,8 @@ def generate_asset(asset_name: str, stage: Stage):
             kufs=None,
             textures=["go.png", "go_border.png", "go_press.png"],
             haf='switch_to_secondary_texture',
-            hdf='switch_to_default_texture',
-            cafs={1: 'switch_to_tertiary_texture'},
+            hdf='hide_go_infobox',
+            cafs={1: 'switch_to_tertiary_texture', 3: 'view_go_infobox'},
             cdfs={1: 'go'}
         )
         object_type = Sprite
@@ -555,7 +774,7 @@ def generate_asset(asset_name: str, stage: Stage):
             app=stage.app,
             name=asset_name,
             stage=stage,
-            posPx=(110, 430),
+            posPx=(110, 487),
             dimensionsPx=(80, 80),
             scale=(1, 1),
             rot=0,
@@ -563,8 +782,8 @@ def generate_asset(asset_name: str, stage: Stage):
             kufs=None,
             textures=["reset.png", "reset_border.png", "reset_clicked.png"],
             haf='switch_to_secondary_texture',
-            hdf='switch_to_default_texture',
-            cafs={1: 'switch_to_tertiary_texture'},
+            hdf='hide_reset_infobox',
+            cafs={1: 'switch_to_tertiary_texture', 3: 'view_reset_infobox'},
             cdfs={1: 'reset'}
         )
         object_type = Sprite
@@ -579,7 +798,7 @@ def generate_asset(asset_name: str, stage: Stage):
             app=stage.app,
             name=asset_name,
             stage=stage,
-            posPx=(196, 430),
+            posPx=(196, 487),
             dimensionsPx=(80, 80),
             scale=(1, 1),
             rot=0,
@@ -587,8 +806,8 @@ def generate_asset(asset_name: str, stage: Stage):
             kufs={pg.K_x: 'key_switch_to_default_texture'},
             textures=["exit.png", "exit_border.png", "exit_clicked.png"],
             haf='switch_to_secondary_texture',
-            hdf='switch_to_default_texture',
-            cafs={1: 'switch_to_tertiary_texture'},
+            hdf='hide_exit_infobox',
+            cafs={1: 'switch_to_tertiary_texture', 3: 'view_exit_infobox'},
             cdfs={1: 'exit'}
         )
         object_type = Sprite

@@ -254,3 +254,10 @@ class Stage(StageType, StageFuncs, StageKeyFuncs):
             return None
         asset: TextSprite = self.asset_dictionary[text_box]
         return asset.text
+
+    def set_text(self, text_box: str, text: str):
+        if self.state < 0:
+            logging.warning(f"Attempted to set text sprite \'{text_box}\' text to \"{text}\", but stage is disabled")
+            return
+        asset: TextSprite = self.asset_dictionary[text_box]
+        asset.update_text(text)

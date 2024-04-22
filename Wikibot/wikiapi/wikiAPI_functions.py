@@ -4,6 +4,7 @@ from collections import Counter, deque
 import heapq
 import wordfreq
 import math
+from typing import Optional
 
 
 class WikiApi:
@@ -122,10 +123,10 @@ class WikiApi:
     def get_names_of_all_visited_sites(self):
         return [page.title for page in self.set_of_all_visited_sites]
 
-    def get_number_of_visited_sites(self):
+    def get_number_of_visited_sites(self) -> int:
         return len(self.set_of_all_visited_sites)
 
-    def get_length_of_path(self):
+    def get_length_of_path(self) -> int:
         path = self.trace_path_backwards()
         if path is not None: return len(self.trace_path_backwards()) - 1
         return 0
@@ -176,7 +177,7 @@ class WikiApi:
         return {x: links_and_indices[x] for x in list(links_and_indices)[:self.neighbors_to_check]}
 
     # Returns the path taken to get to target
-    def trace_path_backwards(self):
+    def trace_path_backwards(self) -> Optional[list[str]]:
         if self.target_page_obj not in self.set_of_all_visited_sites: return None
         current_page_obj = self.target_page_obj
         path = []
