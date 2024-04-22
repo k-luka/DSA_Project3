@@ -11,12 +11,14 @@ class WikiApi:
             self.title = page_title
             #print(self.title)
             self.parent_wiki_api = parent_api
+            # Stores title of parent
             self.parent = ""
             self.word_frequency = {}
 
         def set_parent(self, parent_wiki_page):
             self.parent = parent_wiki_page
 
+        # Returns list of page titles that  given page points to
         def get_page_links(self, page_title):
             # Fetch the page for the given title
             page = self.parent_wiki_api.wiki.page(page_title)
@@ -35,6 +37,7 @@ class WikiApi:
 
             return links_titles
 
+        # Returns text body of given page
         def get_wikipedia_page_text(self):
             # Fetch the page for the given title
             page = self.parent_wiki_api.wiki.page(self.title)
@@ -46,6 +49,7 @@ class WikiApi:
             else:
                 return "Page not found"
 
+        # Retuns a dictionary of word frequencies in a page body (excludes stop words)
         def get_word_frequency(self):
             # Check if the page was found
             text = self.get_wikipedia_page_text()
@@ -81,26 +85,35 @@ class WikiApi:
         self.adjacency_list = {}
         self.set_of_all_visited_sites = set()
 
+    # Sets starting page
     def set_source_page(self, src):
         del self.source_page_obj
         self.source_page_obj = WikiApi.WikiPage(self, src)
 
-    def set_target_page(self, src):
+    # Sets target page
+    def set_target_page(self, trg):
         del self.target_page_obj
-        self.target_page_obj = WikiApi.WikiPage(self, src)
+        self.target_page_obj = WikiApi.WikiPage(self, trg)
 
+    # Changes the setting for accounting for word uniqueness
     def reverse_adjust_for_word_uniqueness(self):
+        # Determines whether word uniqueness is considered for finding the weight of each word
         self.adjust_for_word_uniqueness = not self.adjust_for_word_uniqueness
 
+    # Sets the number of most relevant links to remember from each node
     def set_neighbors_to_check(self, n):
+        # Since an average page has 200 out links, we only consider n most relevant ones
         self.neighbors_to_check = int(n)
 
+    # Returns bool for current setting of word uniqueness
     def get_adjust_for_word_uniqueness(self):
         return self.adjust_for_word_uniqueness
 
+    # Returns int of how many relevant links are saved from each page
     def get_neighbors_to_check(self):
         return self.neighbors_to_check
 
+    # Returns dictionary of pages from path found and titles they link to
     def get_adjacency_list(self):
         return self.adjacency_list
 
@@ -120,6 +133,12 @@ class WikiApi:
             if page_obj.title == page_title: return page_obj
         return None
 
+    # Returns n number of links out of a current page with the highest relation score. To find the relation score of
+    # a link, the following is done: For each word in the title of the link, the log of the word frequency in the
+    # english language is taken (This is done wo that long unique words don't have a crazy effect) then multiplied by
+    # how frequent it is in the target page. The scores for each word in the link title are added up and divided by
+    # the number of words in the title to take the average (stop words aren't counted). This is the relation score
+    # used to rank links.
     def get_most_similar_links_to_target(self, current_page):
         # List to store titles that contain any word found in the target page's word frequency list
         links_and_indices = {}

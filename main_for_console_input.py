@@ -1,7 +1,7 @@
 from wikiAPI_functions import *
 
 def main():
-    wiki = wikiApi()
+    wiki = WikiApi()
     while True:
         print("\nWhat would you like to do?")
         print("1: Get Wikipedia page text")
@@ -44,7 +44,7 @@ def main():
             target_page = input("Enter the target page: ")
             N = int(input("Enter the number titles you want to know the index of: "))
             print("\nCalculating similarity index of links...")
-            wikiInstance = wikiApi()
+            wikiInstance = WikiApi()
             print(wikiInstance.get_n_first_similarity_index_of_links(page_title, target_page, N))
         else:
             print("Invalid choice. Please choose a valid option.")
