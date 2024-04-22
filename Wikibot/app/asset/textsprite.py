@@ -8,35 +8,28 @@ import pygame as pg
 @dataclass()
 class TextSpriteCreateInfo(StaticTextButtonCreateInfo):
     text_func: Optional[str] = None
-    char_size: Optional[tuple[int, int]] = None
     auto_textbox_scaling: bool = False
     pass
-
 
 class TextSprite(StaticTextButton):
     selected: bool = False
     text_func: Optional[Callable[[int, Sequence[bool]], None]] = None
-    char_size: Optional[tuple[int, int]] = None
     auto_textbox_scaling: bool = False
-    cof: Callable[[int, tuple[bool, bool, bool] | tuple[bool, bool, bool, bool, bool]], None] = None
+    default_scale: Optional[Union[tuple[int, int], tuple[float, float]]]
+    ever_clicked: bool = False
 
     def __init__(self, info: Union[type[TextSpriteCreateInfo], TextSpriteCreateInfo]):
-        if info.cafs is None:
-            info.cafs = dict()
-        info.cafs[1] = 'select'
-        if info.char_size is not None:
-            text_length = len(info.text)
-            info.dimensionsPx = (text_length * info.char_size[0], info.char_size[1])
-        self.char_size = info.char_size
         StaticTextButton.__init__(self, info)
-        self.cof = self.deselect
         self._initialize_text_func(info.text_func)
+        # Doing it auto rescaling after StaticTextButton initialization to avoid work
         self.auto_textbox_scaling = info.auto_textbox_scaling
         if self.auto_textbox_scaling:
+            self.default_scale = self.scale
             texture_surface: pg.Surface = self.app.get_texture(self.texture_name)
             texture_dimensions = texture_surface.size
-            scale: float = self.dimensionsPx[1] / texture_dimensions[1]
-            self.dimensionsPx = (texture_dimensions[0] * scale, self.dimensionsPx[1])
+            scale: tuple[float, float] = (texture_dimensions[0] * self.default_scale[0] / self.dimensionsPx[0],
+                                          texture_dimensions[1] * self.default_scale[1] / self.dimensionsPx[1])
+            self.rescale(scale)
         self.update()
 
     def _initialize_text_func(self, text_func_string):
@@ -59,7 +52,6 @@ class TextSprite(StaticTextButton):
             self.list_collision_boundaries()
             self.list_hover_functions()
             self.list_click_functions()
-            self.list_click_off_function()
             self.list_text_function()
             if not scene_layer:
                 self.app.append_model_to_scene(self.model)
@@ -93,17 +85,11 @@ class TextSprite(StaticTextButton):
         if self.auto_textbox_scaling:
             texture_surface: pg.Surface = self.app.get_texture(self.texture_name)
             texture_dimensions = texture_surface.size
-            scale: float = self.dimensionsPx[1] / texture_dimensions[1]
-            self.dimensionsPx = (texture_dimensions[0] * scale, self.dimensionsPx[1])
+            scale: tuple[float, float] = (texture_dimensions[0] * self.default_scale[0] / self.dimensionsPx[0],
+                                          texture_dimensions[1] * self.default_scale[1] / self.dimensionsPx[1])
+            if scale[0] <= 1:
+                self.rescale(scale)
         self.update()
-
-    def list_click_off_function(self):
-        if self.cof is not None:
-            self.app.add_click_off_binding(self)
-
-    def delist_click_off_function(self):
-        if self.cof is not None:
-            self.app.remove_click_off_binding(self)
 
     def list_text_function(self):
         if self.text_func is not None:
@@ -116,11 +102,11 @@ class TextSprite(StaticTextButton):
     def select(self, *args):
         self.selected = True
         self.app.add_text_binding(self)
+        if not self.ever_clicked:
+            self.ever_clicked = True
+            self.update_text('')
+
 
     def deselect(self, *args):
         self.selected = False
         self.app.remove_text_binding(self)
-
-    def click_off(self, trigger, buttons):
-        if self.selected:
-            self.cof()

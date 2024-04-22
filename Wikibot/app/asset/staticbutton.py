@@ -68,6 +68,7 @@ class StaticButton(ButtonType, StaticImage):
             self.list_collision_boundaries()
             self.list_hover_functions()
             self.list_click_functions()
+            self.list_click_off_function()
             if not scene_layer:
                 self.app.append_model_to_scene(self.model)
             else:
@@ -84,6 +85,7 @@ class StaticButton(ButtonType, StaticImage):
             self.delist_collision_boundaries()
             self.delist_hover_functions()
             self.delist_click_functions()
+            self.delist_click_off_function()
             self.app.remove_model_from_scene(self.model)
         else:
             logging.warning(
@@ -128,3 +130,11 @@ class StaticButton(ButtonType, StaticImage):
         if self.cdfs is not None:
             for trigger in self.cdfs.keys():
                 self.app.remove_mouse_up_binding(trigger, self)
+
+    def list_click_off_function(self):
+        if self.cof is not None:
+            self.app.add_click_off_binding(self)
+
+    def delist_click_off_function(self):
+        if self.cof is not None:
+            self.app.remove_click_off_binding(self)

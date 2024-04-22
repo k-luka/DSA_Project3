@@ -9,7 +9,7 @@ class ButtonCreateInfo:
     # click activate function lists
     cafs: Optional[dict[int, str]] = None
     cdfs: Optional[dict[int, str]] = None
-
+    cof: Optional[str] = None
     # hover activate function, hover deactivate function, hover-hold function
     haf: Optional[str] = None
     hdf: Optional[str] = None
@@ -17,13 +17,14 @@ class ButtonCreateInfo:
 
 class ButtonType(ButtonFuncs):
     # click activate function lists
-    cafs: Optional[dict[int, Callable[[int, tuple[bool, bool, bool] | tuple[bool, bool, bool, bool, bool]], None]]] = field(init=False, default=None)
-    cdfs: Optional[dict[int, Callable[[int, tuple[bool, bool, bool] | tuple[bool, bool, bool, bool, bool]], None]]] = field(init=False, default=None)
+    cafs: Optional[dict[int, Callable[[int, tuple[bool, bool, bool] | tuple[bool, bool, bool, bool, bool]], None]]] = None
+    cdfs: Optional[dict[int, Callable[[int, tuple[bool, bool, bool] | tuple[bool, bool, bool, bool, bool]], None]]] = None
+    cof: Callable[[int, tuple[bool, bool, bool] | tuple[bool, bool, bool, bool, bool]], None] = None
     # hover activate function, hover deactivate function, hover-hold function
-    haf: Optional[Callable[[], None]] = field(init=False, default=None)
-    hdf: Optional[Callable[[], None]] = field(init=False, default=None)
+    haf: Optional[Callable[[], None]] = None
+    hdf: Optional[Callable[[], None]] = None
     # Other state tacking vars
-    click_times: dict = field(init=False, default=dict)
+    click_times: dict = dict()
 
     def __init__(self, info: Union[type[ButtonCreateInfo], ButtonCreateInfo]):
         logging.info(f' Generating ButtonBase data for {self.__class__.__name__} object')
@@ -31,6 +32,7 @@ class ButtonType(ButtonFuncs):
         self._initialize_cdfs(info.cdfs)
         self._initialize_haf(info.haf)
         self._initialize_hdf(info.hdf)
+        self._initialize_cof(info.cof)
         self.isClicked = [False, False, False, False, False]
 
     def _initialize_cafs(self, string_cafs: dict[int, str]) -> None:
@@ -89,6 +91,19 @@ class ButtonType(ButtonFuncs):
                             f'Setting to \'None\' instead')
         self.hdf = func
 
+    def _initialize_cof(self, string_cof: str) -> None:
+        if string_cof is None:
+            self.cof = None
+            return
+
+        func = getattr(self, string_cof, None)
+        if func is None:
+            logging.warning(f' {self.__class__.__name__} object \'{self.__repr__}\' '
+                            f'attempted to set click off function to \'{string_cof}\', but \'{string_cof}\' does not exist '
+                            f'as any button funcs, button base, or {self.__class__.__name__} class or parent class method. '
+                            f'Setting to \'None\' instead')
+        self.cof = func
+
     def hover_activate(self) -> None:
         # Turns hover on and runs hover-activate-function
         self.haf()
@@ -107,4 +122,6 @@ class ButtonType(ButtonFuncs):
         if self.cdfs is not None and button in self.cdfs and self.cdfs[button] is not None:
             self.cdfs[button](button, buttons)
 
-    def switch_to_texture(self, value: int) -> None: pass
+    def click_off(self, trigger, buttons):
+        self.cof()
+

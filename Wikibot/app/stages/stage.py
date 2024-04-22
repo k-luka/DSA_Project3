@@ -191,3 +191,20 @@ class Stage(StageType, StageFuncs, StageKeyFuncs):
         asset = self.asset_dictionary[asset_name]
         if asset.isViewable:
             asset.remove_from_scene()
+
+    def select_text_box(self, text_box: str):
+        if self.state < 0:
+            return
+        asset: TextSprite = self.asset_dictionary[text_box]
+        if asset.isViewable:
+            asset.select()
+        for asset in self.asset_dictionary.values():
+            if asset.__class__ == TextSprite and asset.name != text_box and asset.selected:
+                asset.deselect()
+
+    def deselect_text_box(self, text_box: str):
+        if self.state < 0:
+            return
+        asset: TextSprite = self.asset_dictionary[text_box]
+        if asset.isViewable:
+            asset.deselect()

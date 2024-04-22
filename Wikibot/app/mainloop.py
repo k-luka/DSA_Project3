@@ -258,10 +258,47 @@ class MainLoop:
         self.text_bindings.add(textbox)
 
     def remove_text_binding(self, textbox):
-        self.text_bindings.remove(textbox)
+        if textbox in self.text_bindings:
+            self.text_bindings.remove(textbox)
 
     def add_co_binding(self, clickable):
         self.click_off_bindings.add(clickable)
 
     def remove_co_binding(self, clickable):
         self.click_off_bindings.remove(clickable)
+
+    def select_source_text_box(self) -> None:
+        for stage in self.stages.values():
+            if "source_text_box" in stage.asset_dictionary.keys() and stage.state > -1:
+                stage.select_text_box("source_text_box")
+                return
+
+    def select_target_text_box(self) -> None:
+        for stage in self.stages.values():
+            if "target_text_box" in stage.asset_dictionary.keys() and stage.state > -1:
+                stage.select_text_box("target_text_box")
+                return
+
+    def deselect_source_text_box(self) -> None:
+        for stage in self.stages.values():
+            if "source_text_box" in stage.asset_dictionary.keys() and stage.state > -1:
+                stage.deselect_text_box("source_text_box")
+                return
+
+    def deselect_target_text_box(self) -> None:
+        for stage in self.stages.values():
+            if "target_text_box" in stage.asset_dictionary.keys() and stage.state > -1:
+                stage.deselect_text_box("target_text_box")
+                return
+
+    def select_number_box(self) -> None:
+        for stage in self.stages.values():
+            if "number_box" in stage.asset_dictionary.keys() and stage.state > -1:
+                stage.select_text_box("number_box")
+                return
+
+    def deselect_number_box(self) -> None:
+        for stage in self.stages.values():
+            if "number_box" in stage.asset_dictionary.keys() and stage.state > -1:
+                stage.deselect_text_box("number_box")
+                return

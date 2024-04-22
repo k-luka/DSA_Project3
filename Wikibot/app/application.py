@@ -181,6 +181,24 @@ class Application(AppInterface):
     def get_texture(self, texture_name) -> pg.Surface:
         return self.graphics.mesh.texture.textures[texture_name]
 
+    def select_source_text_box(self) -> None:
+        self.mainloop.select_source_text_box()
+
+    def select_target_text_box(self) -> None:
+        self.mainloop.select_target_text_box()
+
+    def deselect_source_text_box(self) -> None:
+        self.mainloop.deselect_source_text_box()
+
+    def deselect_target_text_box(self) -> None:
+        self.mainloop.deselect_target_text_box()
+
+    def select_number_box(self) -> None:
+        self.mainloop.select_number_box()
+
+    def deselect_number_box(self) -> None:
+        self.mainloop.deselect_number_box()
+
     def quit(self) -> None:
         self.running = False
 

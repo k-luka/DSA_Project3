@@ -21,14 +21,21 @@ def generate_stage_info(app: Union[type[AppInterface], AppInterface]) -> list[St
 def generate_asset_info(stage: Stage) -> list[AssetCreateInfo]:
     assets = list()
     if stage.name == "main_menu":
+        assets.append(generate_asset("source_text_box", stage))
+        assets.append(generate_asset("target_text_box", stage))
+        assets.append(generate_asset("number_box", stage))
+        assets.append(generate_asset("source_text_box_background", stage))
+        assets.append(generate_asset("target_text_box_background", stage))
+        assets.append(generate_asset("number_box_background", stage))
         assets.append(generate_asset("exit_button", stage))
-        assets.append(generate_asset("source_text_box", stage)) # TODO: Design source text box
-        #assets.append(generate_asset("target_text_box", stage)) # TODO: Design target text box
-        #assets.append(generate_asset("search_depth_box", stage)) # TODO: Design search depth box
-        #assets.append(generate_asset("toggle_1", stage)) # TODO: Designate toggle parameter
-        #assets.append(generate_asset("toggle_2", stage)) # TODO: Designate toggle parameter
-        #assets.append(generate_asset("go_button", stage)) # TODO: Design go button
-        #assets.append(generate_asset("reset_button", stage)) # TODO: Design reset button
+        assets.append(generate_asset("go_button", stage))
+        assets.append(generate_asset("reset_button", stage))
+        assets.append(generate_asset("uniqueness_switch", stage))
+        assets.append(generate_asset("search_breadth_text", stage))
+        assets.append(generate_asset("search_breadth_background", stage))
+        assets.append(generate_asset("weight_unique_words_text", stage))
+        assets.append(generate_asset("weight_unique_words_background", stage))
+        assets.append(generate_asset("ui_menu", stage))
         #assets.append(generate_asset("custom_cursor", stage))
     return assets
 
@@ -39,17 +46,139 @@ def generate_asset(asset_name: str, stage: Stage):
             app=stage.app,
             name=asset_name,
             stage=stage,
-            posPx=(25, 500),
-            dimensionsPx=(100, 100),
+            posPx=(111, 498),
+            dimensionsPx=(78, 78),
             scale=(1, 1),
             rot=0,
             kdfs={pg.K_x: 'key_switch_to_secondary_texture'},
             kufs={pg.K_x: 'key_switch_to_default_texture'},
-            textures=["exit.png", "exit_border.png"],
+            textures=["exit.png", "exit_border.png", "exit_clicked.png"],
             haf='switch_to_secondary_texture',
             hdf='switch_to_default_texture',
-            cafs=None,
+            cafs={1: 'switch_to_tertiary_texture'},
             cdfs={1: 'exit'}
+        )
+        object_type = Sprite
+        default_viewable = True
+        return AssetCreateInfo(
+            create_info,
+            object_type,
+            default_viewable
+        )
+    elif asset_name == "source_text_box_background":
+        create_info = SpriteCreateInfo(
+            app=stage.app,
+            name=asset_name,
+            stage=stage,
+            posPx=(25, 25),
+            dimensionsPx=(250, 38),
+            scale=(1, 1),
+            rot=0,
+            kdfs=None,
+            kufs=None,
+            textures=["text_box_background_selected.png", "text_box_background.png"],
+            haf=None,
+            hdf=None,
+            cafs={1: 'select_source_text_box'},
+            cdfs=None,
+            cof='deselect_source_text_box'
+        )
+        object_type = Sprite
+        default_viewable = True
+        return AssetCreateInfo(
+            create_info,
+            object_type,
+            default_viewable
+        )
+    elif asset_name == "target_text_box_background":
+        create_info = SpriteCreateInfo(
+            app=stage.app,
+            name=asset_name,
+            stage=stage,
+            posPx=(25, 100),
+            dimensionsPx=(250, 38),
+            scale=(1, 1),
+            rot=0,
+            kdfs=None,
+            kufs=None,
+            textures=["text_box_background_selected.png", "text_box_background.png"],
+            haf=None,
+            hdf=None,
+            cafs={1: 'select_target_text_box'},
+            cdfs=None,
+            cof='deselect_target_text_box'
+        )
+        object_type = Sprite
+        default_viewable = True
+        return AssetCreateInfo(
+            create_info,
+            object_type,
+            default_viewable
+        )
+    elif asset_name == "go_button":
+        create_info = SpriteCreateInfo(
+            app=stage.app,
+            name=asset_name,
+            stage=stage,
+            posPx=(22, 374),
+            dimensionsPx=(100, 100),
+            scale=(1, 1),
+            rot=0,
+            kdfs=None,
+            kufs=None,
+            textures=["go.png", "go_border.png", "go_press.png"],
+            haf='switch_to_secondary_texture',
+            hdf='switch_to_default_texture',
+            cafs={1: 'switch_to_tertiary_texture'},
+            cdfs={1: 'go'}
+        )
+        object_type = Sprite
+        default_viewable = True
+        return AssetCreateInfo(
+            create_info,
+            object_type,
+            default_viewable
+        )
+    elif asset_name == "go_button":
+        create_info = SpriteCreateInfo(
+            app=stage.app,
+            name=asset_name,
+            stage=stage,
+            posPx=(22, 374),
+            dimensionsPx=(100, 100),
+            scale=(1, 1),
+            rot=0,
+            kdfs=None,
+            kufs=None,
+            textures=["go.png", "go_border.png", "go_press.png"],
+            haf='switch_to_secondary_texture',
+            hdf='switch_to_default_texture',
+            cafs={1: 'switch_to_tertiary_texture'},
+            cdfs={1: 'go'}
+        )
+        object_type = Sprite
+        default_viewable = True
+        return AssetCreateInfo(
+            create_info,
+            object_type,
+            default_viewable
+        )
+    elif asset_name == "reset_button":
+        create_info = SpriteCreateInfo(
+            app=stage.app,
+            name=asset_name,
+            stage=stage,
+            posPx=(178, 374),
+            dimensionsPx=(100, 100),
+            scale=(1, 1),
+            rot=0,
+            kdfs=None,
+            kufs=None,
+            textures=["reset.png", "reset_border.png", "reset_clicked.png"],
+            haf='switch_to_secondary_texture',
+            hdf='switch_to_default_texture',
+            cafs={1: 'switch_to_tertiary_texture'},
+            cdfs={1: 'reset'}
         )
         object_type = Sprite
         default_viewable = True
@@ -63,8 +192,8 @@ def generate_asset(asset_name: str, stage: Stage):
             app=stage.app,
             name=asset_name,
             stage=stage,
-            posPx=(25, 25),
-            dimensionsPx=(150, 25),
+            posPx=(35, 35),
+            dimensionsPx=(235, 30),
             scale=(1, 1),
             rot=0,
             kdfs={pg.K_BACKSPACE: 'backspace'},
@@ -72,14 +201,245 @@ def generate_asset(asset_name: str, stage: Stage):
             cafs=None,
             cdfs=None,
             size=30,
-            text='Enter Title Here',
+            text='Enter Source Page',
             color=(200, 200, 200),
-            background=(10, 10, 10),
-            # char_size=(30, 20),
+            background=(134, 134, 134),
             auto_textbox_scaling=True,
             text_func='type_alphanum',
         )
         object_type = TextSprite
+        default_viewable = True
+        return AssetCreateInfo(
+            create_info,
+            object_type,
+            default_viewable
+        )
+    elif asset_name == "target_text_box":
+        create_info = TextSpriteCreateInfo(
+            app=stage.app,
+            name=asset_name,
+            stage=stage,
+            posPx=(35, 110),
+            dimensionsPx=(235, 30),
+            scale=(1, 1),
+            rot=0,
+            kdfs={pg.K_BACKSPACE: 'backspace'},
+            kufs=None,
+            cafs=None,
+            cdfs=None,
+            size=30,
+            text='Enter Target Page',
+            color=(200, 200, 200),
+            background=(134, 134, 134),
+            auto_textbox_scaling=True,
+            text_func='type_alphanum',
+        )
+        object_type = TextSprite
+        default_viewable = True
+        return AssetCreateInfo(
+            create_info,
+            object_type,
+            default_viewable
+        )
+    elif asset_name == "number_box":
+        create_info = TextSpriteCreateInfo(
+            app=stage.app,
+            name=asset_name,
+            stage=stage,
+            posPx=(249, 185),
+            dimensionsPx=(30, 30),
+            scale=(1, 1),
+            rot=0,
+            kdfs={pg.K_BACKSPACE: 'backspace'},
+            kufs=None,
+            cafs=None,
+            cdfs=None,
+            size=30,
+            text='5',
+            color=(200, 200, 200),
+            background=(134, 134, 134),
+            auto_textbox_scaling=True,
+            text_func='type_numeric_one_digit',
+        )
+        object_type = TextSprite
+        default_viewable = True
+        return AssetCreateInfo(
+            create_info,
+            object_type,
+            default_viewable
+        )
+    elif asset_name == "number_box_background":
+        create_info = SpriteCreateInfo(
+            app=stage.app,
+            name=asset_name,
+            stage=stage,
+            posPx=(237, 175),
+            dimensionsPx=(38, 38),
+            scale=(1, 1),
+            rot=0,
+            kdfs=None,
+            kufs=None,
+            textures=["number_box.png", "number_box_selected.png"],
+            haf=None,
+            hdf=None,
+            cafs={1: 'select_number_box'},
+            cdfs=None,
+            cof='deselect_number_box'
+        )
+        object_type = Sprite
+        default_viewable = True
+        return AssetCreateInfo(
+            create_info,
+            object_type,
+            default_viewable
+        )
+    elif asset_name == "uniqueness_switch":
+        create_info = SpriteCreateInfo(
+            app=stage.app,
+            name=asset_name,
+            stage=stage,
+            posPx=(112, 312),
+            dimensionsPx=(76, 38),
+            scale=(1, 1),
+            rot=0,
+            kdfs=None,
+            kufs=None,
+            textures=["switch_on.png", "switch_off.png"],
+            haf=None,
+            hdf=None,
+            cafs={1: 'switch_texture'},
+            cdfs=None,
+            cof=None,
+        )
+        object_type = Sprite
+        default_viewable = True
+        return AssetCreateInfo(
+            create_info,
+            object_type,
+            default_viewable
+        )
+    elif asset_name == "search_breadth_text":
+        create_info = TextSpriteCreateInfo(
+            app=stage.app,
+            name=asset_name,
+            stage=stage,
+            posPx=(33, 185),
+            dimensionsPx=(30, 30),
+            scale=(1, 1),
+            rot=0,
+            kdfs=None,
+            kufs=None,
+            cafs=None,
+            cdfs=None,
+            size=30,
+            text='Search Breadth:',
+            color=(20, 20, 20),
+            background=(134, 134, 134),
+            auto_textbox_scaling=True,
+            text_func=None,
+        )
+        object_type = TextSprite
+        default_viewable = True
+        return AssetCreateInfo(
+            create_info,
+            object_type,
+            default_viewable
+        )
+    elif asset_name == "search_breadth_background":
+        create_info = SpriteCreateInfo(
+            app=stage.app,
+            name=asset_name,
+            stage=stage,
+            posPx=(25, 175),
+            dimensionsPx=(175, 38),
+            scale=(1, 1),
+            rot=0,
+            kdfs=None,
+            kufs=None,
+            textures=["search_breadth.png"],
+            haf=None,
+            hdf=None,
+            cafs=None,
+            cdfs=None,
+            cof=None,
+        )
+        object_type = Sprite
+        default_viewable = True
+        return AssetCreateInfo(
+            create_info,
+            object_type,
+            default_viewable
+        )
+    elif asset_name == "weight_unique_words_text":
+        create_info = TextSpriteCreateInfo(
+            app=stage.app,
+            name=asset_name,
+            stage=stage,
+            posPx=(33, 260),
+            dimensionsPx=(30, 30),
+            scale=(1, 1),
+            rot=0,
+            kdfs=None,
+            kufs=None,
+            cafs=None,
+            cdfs=None,
+            size=30,
+            text='Unique Word Weighting',
+            color=(20, 20, 20),
+            background=(134, 134, 134),
+            auto_textbox_scaling=True,
+            text_func=None,
+        )
+        object_type = TextSprite
+        default_viewable = True
+        return AssetCreateInfo(
+            create_info,
+            object_type,
+            default_viewable
+        )
+    elif asset_name == "weight_unique_words_background":
+        create_info = SpriteCreateInfo(
+            app=stage.app,
+            name=asset_name,
+            stage=stage,
+            posPx=(25, 250),
+            dimensionsPx=(250, 38),
+            scale=(1, 1),
+            rot=0,
+            kdfs=None,
+            kufs=None,
+            textures=["text_box_background_selected.png"],
+            haf=None,
+            hdf=None,
+            cafs=None,
+            cdfs=None,
+            cof=None,
+        )
+        object_type = Sprite
+        default_viewable = True
+        return AssetCreateInfo(
+            create_info,
+            object_type,
+            default_viewable
+        )
+    elif asset_name == "ui_menu":
+        create_info = SpriteCreateInfo(
+            app=stage.app,
+            name=asset_name,
+            stage=stage,
+            posPx=(0, 0),
+            dimensionsPx=(300, 600),
+            scale=(1, 1),
+            rot=0,
+            kdfs=None,
+            kufs=None,
+            textures=["ui_background.png"],
+            haf=None,
+            hdf=None,
+            cafs=None,
+            cdfs=None,
+        )
+        object_type = Sprite
         default_viewable = True
         return AssetCreateInfo(
             create_info,

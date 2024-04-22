@@ -143,6 +143,22 @@ class AppInterface(ABC):
 
     @abstractmethod
     def get_texture(self, texture_name) -> pg.Surface: pass
-    
 
+    @abstractmethod
+    def select_source_text_box(self) -> None: pass
+
+    @abstractmethod
+    def select_target_text_box(self) -> None: pass
+
+    @abstractmethod
+    def deselect_source_text_box(self) -> None: pass
+
+    @abstractmethod
+    def deselect_target_text_box(self) -> None: pass
+
+    @abstractmethod
+    def select_number_box(self) -> None: pass
+
+    @abstractmethod
+    def deselect_number_box(self) -> None: pass
 
