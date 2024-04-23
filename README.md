@@ -1,7 +1,7 @@
 # Wikibot
 
 Wikibot is a Wikipedia speedrun bot that finds a path from a given starting page to a given target page using text body links.
-To find the target page, two algorithms can be used: BFS and Greedy Search. The links can be given a relation score based on the following criteria: the number of times the words of the linked title appear on the target page times the log of how uncommon that word is in the English language.
+To find the target page, two algorithms can be used: BFS and Greedy Search. The links can be given a relation score based on the following criteria: the number of times the words of the linked title appear on the target page multiplied by the log of how uncommon that word is in the English language.
 
 BFS (kinda greedy): Since the average page links to 200 others, pure BFS would be unfeasible. Because of this our BFS only looks at N best links from each page. Where N is the Breadth space which can be set by the user. Our greedy BFS can find the shorter path between pages at the expense of being much slower.
 
