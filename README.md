@@ -23,22 +23,13 @@ To run, install the following libraries:
 - regex
 - PyGLM
 - wordfreq
-- certifi
-- charset-normalizer
-- ftfy
-- glcontext
-- idna
-- langcodes
-- locate
 - moderngl
-- msgpack
 - numpy
-- pip
 - pygame
-- requests
-- setuptools
-- urlib3
-- wcwidth
+- math
+- collections
+- heapq
+- wordfreq
 
 
 ## Maintainers
