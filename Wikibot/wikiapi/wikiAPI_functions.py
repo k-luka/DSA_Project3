@@ -1,26 +1,27 @@
-import wikipediaapi
-import re
-from collections import Counter, deque
+# Necessary libraries
+import wikipediaapi # Wikipedia API library
+import wordfreq # Used for determining word uniqueness
 import heapq
-import wordfreq
+from collections import Counter, deque
 import math
+import re
 from typing import Optional
 
-
+# Class with methods for entire wikipedia API
 class WikiApi:
+    # Class with methods for a single wikipedia page
     class WikiPage:
         def __init__(self, parent_api, page_title):
             self.title = page_title
-            #print(self.title)
+            # Store WikiApi object in self.parent_wiki_api
             self.parent_wiki_api = parent_api
-            # Stores title of parent
             self.parent = ""
             self.word_frequency = {}
 
         def set_parent(self, parent_wiki_page):
             self.parent = parent_wiki_page
 
-        # Returns list of page titles that  given page points to
+        # Returns list of page titles that given page points to
         def get_page_links(self, page_title):
             # Fetch the page for the given title
             page = self.parent_wiki_api.wiki.page(page_title)
@@ -58,7 +59,7 @@ class WikiApi:
             if text == "Page not found":
                 return "Page not found"
 
-            # Clean and split the text into words, lowercasing to standardize
+            # Use Regex to clean and split the text into words, lowercasing to standardize
             words = re.findall(r'\w+', text.upper())
 
             # Create a Counter to count occurrences of each word, excluding stop words
@@ -79,14 +80,17 @@ class WikiApi:
                            'MANY', 'WOULD', 'FROM', 'ABOUT', 'AS', 'COULD', 'BEEN', 'THAT',
                            'MUST', 'OR', 'SUCH', 'UP', 'HAS', 'BY', 'AND', 'DID', 'TO', 'THE',
                            'SHOULD', 'ARE', 'ALSO', 'AT'}
+        # Attributes to be modified by user
         self.adjust_for_word_uniqueness = word_uniqueness
         self.neighbors_to_check = neighbors_checked
+        self.use_bfs = use_bfs
+        # Store source and target WikiPage objects
         self.source_page_obj = WikiApi.WikiPage(self, src)
         self.target_page_obj = WikiApi.WikiPage(self, tgt)
         self.target_page_obj.get_word_frequency()
+        # Store adjacency list and set of all visited notes for output later
         self.adjacency_list = {}
         self.set_of_all_visited_sites = set()
-        self.use_bfs = use_bfs
 
     # Sets starting page
     def set_source_page(self, src):
@@ -120,17 +124,22 @@ class WikiApi:
     def get_adjacency_list(self):
         return self.adjacency_list
 
+    # Returns list of strings of titles of all visited sites
     def get_names_of_all_visited_sites(self):
         return [page.title for page in self.set_of_all_visited_sites]
 
+    # Returns size of visited sites set
     def get_number_of_visited_sites(self) -> int:
         return len(self.set_of_all_visited_sites)
 
+    # Returns length of path after a search
     def get_length_of_path(self) -> int:
         path = self.trace_path_backwards()
         if path is not None: return len(self.trace_path_backwards()) - 1
         return 0
 
+    # Returns WikiPage object with a given title, used in trace_path_backwards()
+    # and search methods
     def get_object_matching_page_title(self, page_title):
         for page_obj in self.set_of_all_visited_sites:
             if page_obj.title == page_title: return page_obj
@@ -156,23 +165,24 @@ class WikiApi:
         # Iterates over each title and its words
         for title, words in title_words.items():
             # Check if any word in the title is in the target page's frequency dictionary
-            totalFreq = 0
+            total_freq = 0
             for word in words:
                 if word in target_words.keys():
                     # Add word times its uniqueness weight
                     word_uniqueness = wordfreq.word_frequency(word, "en")
-                    if word_uniqueness <= 0:
-                        word_uniqueness_weight = lambda word: 10
-                    else:
-                        word_uniqueness_weight = lambda word: -1 * math.log10(word_uniqueness) - 1
+                    # Word uniqueness method as determined through experimentation
+                    if word_uniqueness <= 0: word_uniqueness_weight = lambda word: 10
+                    else: word_uniqueness_weight = lambda word: -1 * math.log10(word_uniqueness) - 1
+                    # Remove effect of function if adjust_for_word_uniqueness not True
                     if not self.adjust_for_word_uniqueness: word_uniqueness_weight = lambda word: 1
-                    totalFreq += target_words[word] * word_uniqueness_weight(word)
+                    total_freq += target_words[word] * word_uniqueness_weight(word)
             try:
-                totalFreq /= len(words)
+                total_freq /= len(words)
             except:
-                totalFreq = 0
-            links_and_indices[title] = totalFreq
+                total_freq = 0
+            links_and_indices[title] = total_freq
 
+        # Return subset of links and their similarity indices, sorted by decreasing index
         links_and_indices = dict(sorted(links_and_indices.items(), key=lambda item: item[1], reverse=True))
         return {x: links_and_indices[x] for x in list(links_and_indices)[:self.neighbors_to_check]}
 
@@ -181,6 +191,7 @@ class WikiApi:
         if self.target_page_obj not in self.set_of_all_visited_sites: return None
         current_page_obj = self.target_page_obj
         path = []
+        # Iterates through objects and their parents until the entire path is reached
         while current_page_obj.parent != self.source_page_obj.title:
             path.append(current_page_obj.title)
             current_page_obj = self.get_object_matching_page_title(current_page_obj.parent)
@@ -189,6 +200,7 @@ class WikiApi:
         path.reverse()
         return path
 
+# Used for information-gathering
     def print_summary(self):
         print("Adjacency list: ", end="")
         print(wikiInstance.get_adjacency_list())
@@ -210,28 +222,32 @@ class WikiApi:
         self.set_of_all_visited_sites.clear()
 
         while queue:
+            # Store page and its parent in a queue to use for object creation
             current_page, current_page_parent = queue.popleft()
 
             # Skip revisiting pages
             if (current_page_parent != "" and self.get_object_matching_page_title(current_page)
                     in self.set_of_all_visited_sites):
                 continue
+            # Make an object for a page if its actually visited
             current_page_obj = WikiApi.WikiPage(self, current_page)
             current_page_obj.set_parent(current_page_parent)
             self.set_of_all_visited_sites.add(current_page_obj)
 
+            # Insert the page to the adjacency list dict and its parent's value
             if current_page_parent != "":
                 self.adjacency_list[current_page_parent].append(current_page)
             if current_page not in self.adjacency_list.keys():
                 self.adjacency_list[current_page] = []
 
-            # Get the top 'n' similar linked pages from the current page
+            # Get the top similar linked pages from the current page
             try:
                 related_links = self.get_most_similar_links_to_target(current_page)
-                # Check if the current page is the target page
+                # Print site and links for debugging
                 print(str(current_page) + " links to " + str(related_links))
+                # If target found in list of links
                 if self.target_page_obj.title.upper() in [word.upper() for word in related_links.keys()]:
-                    # Add target object to adjacency list and set
+                    # Add target object to adjacency list and set and return
                     self.target_page_obj.set_parent(current_page)
                     self.set_of_all_visited_sites.add(self.target_page_obj)
                     self.adjacency_list[current_page].append(self.target_page_obj.title)
@@ -253,36 +269,40 @@ class WikiApi:
     # based on their similarity index. At each step, Greedy Search explores the highest rated page. Where N is
     # determined by the user in "Search Breadth"
     def greedy_search(self):
-        priorityQueue = []
+        priority_queue = []
         # Min heap representing our nodes to visit. Similarity indices will be inserted as
         # negative values so the min heap returns the values with actually the most similarity
-        heapq.heappush(priorityQueue, (0, (self.source_page_obj.title, "")))
+        heapq.heappush(priority_queue, (0, (self.source_page_obj.title, "")))
         self.adjacency_list.clear()
         self.set_of_all_visited_sites.clear()
 
-        while priorityQueue:
-            current_page, current_page_parent = heapq.heappop(priorityQueue)[1]
+        while priority_queue:
+            # Store page and its parent in the PQ to use for object creation
+            current_page, current_page_parent = heapq.heappop(priority_queue)[1]
 
             # Skip revisiting pages
             if (current_page_parent != "" and self.get_object_matching_page_title(current_page)
                     in self.set_of_all_visited_sites):
                 continue
+            # Make an object for a page if its actually visited
             current_page_obj = WikiApi.WikiPage(self, current_page)
             current_page_obj.set_parent(current_page_parent)
             self.set_of_all_visited_sites.add(current_page_obj)
 
+            # Insert the page to the adjacency list dict and its parent's value
             if current_page_parent != "":
                 self.adjacency_list[current_page_parent].append(current_page)
             if current_page not in self.adjacency_list.keys():
                 self.adjacency_list[current_page] = []
 
-            # Get the top 'n' similar linked pages from the current page
+            # Get the top similar linked pages from the current page
             try:
                 related_links = self.get_most_similar_links_to_target(current_page)
-                # Check if the current page is the target page
+                # Print site and links for debugging
                 print(str(current_page) + " links to " + str(related_links))
+                # If target found in list of links
                 if self.target_page_obj.title.upper() in [word.upper() for word in related_links.keys()]:
-                    # Add target object to adjacency list and set
+                    # Add target object to adjacency list and set and return
                     self.target_page_obj.set_parent(current_page)
                     self.set_of_all_visited_sites.add(self.target_page_obj)
                     self.adjacency_list[current_page].append(self.target_page_obj.title)
@@ -296,29 +316,32 @@ class WikiApi:
             # Enqueue unvisited linked pages
             for page, similarity_index in related_links.items():
                 if self.get_object_matching_page_title(page) not in self.set_of_all_visited_sites:
-                    heapq.heappush(priorityQueue, (-1 * similarity_index, (page, current_page)))
+                    # Negate similarity index to use min heap as a max heap
+                    heapq.heappush(priority_queue, (-1 * similarity_index, (page, current_page)))
 
         return "Target page not found within the connected pages."
 
+    # Determine what search to use
     def search(self):
         if self.use_bfs:
             self.bfs_search()
         else:
             self.greedy_search()
 
+    # Get title of source page
     def get_source_page_title(self) -> str:
         return self.source_page_obj.title
 
+    # Get title of target page
     def get_target_page_title(self) -> str:
         return self.target_page_obj.title
 
-
 if __name__ == '__main__':
-    wikiInstance = WikiApi("Data structure", "Alligator")
-    # Yields path of length 6 in a few minutes
-    # print(wikiInstance.bfs_search())
-    # wikiInstance.print_summary()
+    wikiInstance = WikiApi("Starbucks", "Strawberry")
+    # Yields path of length 4 in about 20 seconds
+    print(wikiInstance.bfs_search())
+    wikiInstance.print_summary()
     print("-------------------------")
-    # Yields path of length 10 in a few seconds
+    # Yields path of length 5 in about 3 seconds
     print(wikiInstance.greedy_search())
     wikiInstance.print_summary()
