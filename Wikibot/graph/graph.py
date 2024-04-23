@@ -28,11 +28,11 @@ class Graph(GraphType):
         self.stage = app.get_stage(stage_name)
         scr_x, scr_y = app.win_size()
         max_dix = scr_x / (self.node_region_radius * self.grid_transform_scale[0])
-        self.grid_max_x = round(max_dix)
-        self.grid_min_x = round(self.grid_max_x / 2)
+        self.grid_max_x = round(max_dix * 0.98)
+        self.grid_min_x = round(max_dix * 0.35333)
         max_diy = scr_y / (self.node_region_radius * self.grid_transform_scale[1])
-        self.grid_max_y = round(max_diy)
-        self.grid_min_y = 0
+        self.grid_max_y = round(max_diy * 0.98)
+        self.grid_min_y = round(max_diy * 0.02)
         
     def generate_source_node_indices(self):
         return self.round_scr_coords(
@@ -49,9 +49,13 @@ class Graph(GraphType):
     def generate_random_indices(self):
         init_x = None
         init_y = None
+        attempts = 0
         while (init_x is None or init_y is None) or ((init_x, init_y) in self.node_indices.keys()):
-            init_x = random.randint(self.grid_min_x, self.grid_max_x)
-            init_y = random.randint(self.grid_min_y, self.grid_max_y)
+            if attempts < 50:
+                init_x = random.randint(self.grid_min_x, self.grid_max_x)
+                init_y = random.randint(self.grid_min_y, self.grid_max_y)
+            else:
+                init_x, init_y = self.generate_indices_near(self.source_node.title)
             if (init_x + init_y) % 2:
                 direction_shift = random.randint(0, 3)
                 if direction_shift == 0:
@@ -62,6 +66,8 @@ class Graph(GraphType):
                     init_x -= 1
                 else:
                     init_y -= 1
+            if init_x is not None and init_y is not None:
+                attempts += 1
         return init_x, init_y
         
     def round_scr_coords(self, coord_x, coord_y):
@@ -108,27 +114,35 @@ class Graph(GraphType):
         root_node = self.nodes[node_title]
         ring = 1
         x_distance = 1
-        y_distance = 1
+        y_distance = 1 * search_order
+        temp_result = None
+        attempts_since_first_valid = 0
         while True:
-            result = self.explore_ring(ring, x_distance, y_distance,
-                                       root_node.indices,
-                                       root_node.grid_neighbors)
+            if temp_result is None:
+                result = self.explore_ring(ring, x_distance, y_distance, root_node.indices)
+            else:
+                result = self.explore_ring_in_page(ring, x_distance, y_distance, root_node.indices)
             if result is not None:
-                return result
+                if self.in_page(result):
+                    return result
+                temp_result = result
+            if temp_result is not None:
+                attempts_since_first_valid += 1
+            if attempts_since_first_valid > 4:
+                return temp_result
             ring += 1
             x_distance = ring
             y_distance = (x_distance % 2) * search_order
 
-    @staticmethod
-    def explore_ring(ring, x_distance, y_distance, center_indices, neighbors):
+    def explore_ring(self, ring, x_distance, y_distance, center_indices):
         # Search right edge
         for i in range(ring):
             result_index = (center_indices[0] + x_distance, center_indices[1] + y_distance)
-            if result_index not in neighbors:
+            if result_index not in self.node_indices.keys():
                 return result_index
             y_distance *= -1
             result_index = (center_indices[0] + x_distance, center_indices[1] + y_distance)
-            if result_index not in neighbors:
+            if result_index not in self.node_indices.keys():
                 return result_index
             y_distance *= -1
             y_distance += math.copysign(2, y_distance)
@@ -137,11 +151,11 @@ class Graph(GraphType):
         y_distance -= math.copysign(1, y_distance)
         for i in range(ring):
             result_index = (center_indices[0] + x_distance, center_indices[1] + y_distance)
-            if result_index not in neighbors:
+            if result_index not in self.node_indices.keys():
                 return result_index
             y_distance *= -1
             result_index = (center_indices[0] + x_distance, center_indices[1] + y_distance)
-            if result_index not in neighbors:
+            if result_index not in self.node_indices.keys():
                 return result_index
             y_distance *= -1
             x_distance -= 1
@@ -150,11 +164,11 @@ class Graph(GraphType):
         y_distance -= math.copysign(2, y_distance)
         for i in range(ring):
             result_index = (center_indices[0] + x_distance, center_indices[1] + y_distance)
-            if result_index not in neighbors:
+            if result_index not in self.node_indices.keys():
                 return result_index
             y_distance *= -1
             result_index = (center_indices[0] + x_distance, center_indices[1] + y_distance)
-            if result_index not in neighbors:
+            if result_index not in self.node_indices.keys():
                 return result_index
             y_distance *= -1
             x_distance -= 1
@@ -164,12 +178,77 @@ class Graph(GraphType):
         y_distance -= math.copysign(1, y_distance)
         for i in range(ring - 1):
             result_index = (center_indices[0] + x_distance, center_indices[1] + y_distance)
-            if result_index not in neighbors:
+            if result_index not in self.node_indices.keys():
                 return result_index
             y_distance *= -1
             result_index = (center_indices[0] + x_distance, center_indices[1] + y_distance)
-            if result_index not in neighbors:
+            if result_index not in self.node_indices.keys():
                 return result_index
+            y_distance *= -1
+            y_distance -= math.copysign(2, y_distance)
+        return None
+
+    def in_page(self, indices):
+        return (self.grid_min_x < indices[0] < self.grid_max_x) and (self.grid_min_y < indices[1] < self.grid_max_y)
+
+    def explore_ring_in_page(self, ring, x_distance, y_distance, center_indices):
+        # Search right edge
+        for i in range(ring):
+            result_index = (center_indices[0] + x_distance, center_indices[1] + y_distance)
+            if result_index not in self.node_indices.keys():
+                if self.in_page(result_index):
+                    return result_index
+            y_distance *= -1
+            result_index = (center_indices[0] + x_distance, center_indices[1] + y_distance)
+            if result_index not in self.node_indices.keys():
+                if self.in_page(result_index):
+                    return result_index
+            y_distance *= -1
+            y_distance += math.copysign(2, y_distance)
+        # Search top/bottom right edge
+        x_distance -= 1
+        y_distance -= math.copysign(1, y_distance)
+        for i in range(ring):
+            result_index = (center_indices[0] + x_distance, center_indices[1] + y_distance)
+            if result_index not in self.node_indices.keys():
+                if self.in_page(result_index):
+                    return result_index
+            y_distance *= -1
+            result_index = (center_indices[0] + x_distance, center_indices[1] + y_distance)
+            if result_index not in self.node_indices.keys():
+                if self.in_page(result_index):
+                    return result_index
+            y_distance *= -1
+            x_distance -= 1
+            y_distance += math.copysign(1, y_distance)
+        # Search top/bottom left edge
+        y_distance -= math.copysign(2, y_distance)
+        for i in range(ring):
+            result_index = (center_indices[0] + x_distance, center_indices[1] + y_distance)
+            if result_index not in self.node_indices.keys():
+                if self.in_page(result_index):
+                    return result_index
+            y_distance *= -1
+            result_index = (center_indices[0] + x_distance, center_indices[1] + y_distance)
+            if result_index not in self.node_indices.keys():
+                if self.in_page(result_index):
+                    return result_index
+            y_distance *= -1
+            x_distance -= 1
+            y_distance -= math.copysign(1, y_distance)
+        # Search left edge
+        x_distance += 1
+        y_distance -= math.copysign(1, y_distance)
+        for i in range(ring - 1):
+            result_index = (center_indices[0] + x_distance, center_indices[1] + y_distance)
+            if result_index not in self.node_indices.keys():
+                if self.in_page(result_index):
+                    return result_index
+            y_distance *= -1
+            result_index = (center_indices[0] + x_distance, center_indices[1] + y_distance)
+            if result_index not in self.node_indices.keys():
+                if self.in_page(result_index):
+                    return result_index
             y_distance *= -1
             y_distance -= math.copysign(2, y_distance)
         return None
