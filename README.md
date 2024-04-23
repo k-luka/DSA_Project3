@@ -29,7 +29,6 @@ To run, install the following libraries:
 - math
 - collections
 - heapq
-- wordfreq
 
 
 ## Maintainers
