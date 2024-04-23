@@ -17,7 +17,7 @@ Run wikibot.py located in the wikibot directory. Enter desired starting and targ
 
 ![alt text](https://github.com/k-luka/DSA_Project3/assets/106494914/ae26677e-d2ac-4e4f-a4a8-cece6f0acee9)
 
-The path to target is hihglishted yellow and the unused but explored nodes are in grey.
+The path to target is hihglishted yellow and the unused visited nodes are in grey.
 
 
 ## Dependancies
