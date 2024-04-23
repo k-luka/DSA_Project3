@@ -15,7 +15,7 @@ Greedy search is similar however instead of going equaly in every direction, it 
 
 Run wikibot.py located in the wikibot directory. Enter desired starting and target page, customize the options and click the green button. A graph showing the visited pages will appear. To re-run click the yellow button. To close the program, click the red exit button. Sample run shown in the image below.
 
-<img src="https://github.com/k-luka/DSA_Project3/assets/106494914/ae26677e-d2ac-4e4f-a4a8-cece6f0acee9" width="500" alt="alt text">
+<img src="https://github.com/k-luka/DSA_Project3/assets/106494914/ae26677e-d2ac-4e4f-a4a8-cece6f0acee9" width="600" alt="alt text">
 
 The path to target is hihglishted yellow and the unused visited nodes are in grey.
 
